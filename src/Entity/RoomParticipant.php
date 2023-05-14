@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RoomParticipantRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\Date;
 
@@ -22,8 +23,9 @@ class RoomParticipant
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+
     #[ORM\Column]
-    private ?Date $timestamp = null;
+    private ?DateTime $createdAt = null;
 
     #[ORM\Column]
     private ?bool $is_active = true;
@@ -61,14 +63,14 @@ class RoomParticipant
         return $this;
     }
 
-    public function getTimestamp(): ?Date
+    public function getCreatedAt(): ?DateTime
     {
-        return $this->timestamp;
+        return $this->createdAt;
     }
 
-    public function setTimestamp(Date $timestamp): RoomParticipant
+    public function setCreatedAt(DateTime $createdAt): RoomParticipant
     {
-        $this->timestamp = $timestamp;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
@@ -103,5 +105,10 @@ class RoomParticipant
     {
         $this->is_banned = $is_banned;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->id;
     }
 }

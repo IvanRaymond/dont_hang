@@ -18,28 +18,17 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RoomParticipantRepository extends ServiceEntityRepository
 {
-    private ManagerRegistry $managerRegistry;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, RoomParticipant::class);
-        $this->managerRegistry = $registry;
     }
 
     public function save(RoomParticipant $entity, bool $flush = false): void
     {
-        // Check if room is full
-        $room_repo = new RoomRepository($this->managerRegistry);
-        try {
-            $room = $room_repo->findOneById($entity->getRoom()->getId());
-            if ($room->getCapacity() <= $this->getCountByRoomId($entity->getRoom()->getId())) {
-                $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->persist($entity);
 
-                if ($flush) {
-                    $this->getEntityManager()->flush();
-                }
-            }
-        } catch (\Exception $e) {
-            return;
+        if ($flush) {
+            $this->getEntityManager()->flush();
         }
     }
 
@@ -52,18 +41,38 @@ class RoomParticipantRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @throws NonUniqueResultException
-     * @throws NoResultException
-     */
-    public function getCountByRoomId(int $room_id): int
+    public function getCountByRoomId(int $room): int
     {
-        return $this->createQueryBuilder('rp')
-            ->select('COUNT(rp.id)')
-            ->andWhere('rp.room_id = :room_id')
-            ->setParameter('room_id', $room_id)
-            ->getQuery()
-            ->getSingleScalarResult()
-        ;
+        try {
+            $result = $this->createQueryBuilder('rp')
+                ->select('COUNT(rp.id)')
+                ->andWhere('rp.room = :room')
+                ->setParameter('room', $room)
+                ->getQuery()
+                ->getSingleScalarResult()
+            ;
+        } catch (NoResultException | NonUniqueResultException $e) {
+            return 0;
+        }
+
+        return $result;
+    }
+
+    public function findOneByRoomAndUser(int $room, int $user): ?RoomParticipant
+    {
+        try {
+            $result = $this->createQueryBuilder('rp')
+                ->andWhere('rp.room = :room_id')
+                ->andWhere('rp.user = :user_id')
+                ->setParameter('room_id', $room)
+                ->setParameter('user_id', $user)
+                ->getQuery()
+                ->getOneOrNullResult()
+            ;
+        } catch (NoResultException | NonUniqueResultException $e) {
+            return null;
+        }
+
+        return $result;
     }
 }
