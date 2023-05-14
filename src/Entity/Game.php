@@ -23,10 +23,10 @@ class Game
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $word = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $time = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $end_time = null;
 
     #[ORM\Column]
@@ -42,11 +42,12 @@ class Game
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'game', targetEntity: Proposal::class)]
+    #[ORM\ManyToMany(targetEntity: Proposal::class, inversedBy: 'games')]
     private Collection $proposals;
 
     public function __construct()
     {
+        $this->created_at = new \DateTimeImmutable();
         $this->proposals = new ArrayCollection();
     }
 
