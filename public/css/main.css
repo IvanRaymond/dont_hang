@@ -1,0 +1,47 @@
+body {
+  font-family: kg_indie_flowerregular;
+}
+
+.container-flex {
+  display: flex;
+  flex-direction: row;
+}
+
+.container-item {
+  width: 100%;
+}
+
+.bar {
+  border-bottom: 2px solid #ccc;
+}
+
+/* start code of border form stackoverflow 43694588 */
+.border {
+  background:transparent;
+  font-size:1rem;
+
+  border-top-left-radius: 250px 5px;
+  border-top-right-radius: 5px 220px;
+  border-bottom-right-radius: 220px 5px;
+  border-bottom-left-radius: 5px 250px;
+}
+
+.border:hover{
+  box-shadow:2px 4px 4px -6px hsla(0,0%,0%,.3);
+}
+.border.lined.thick{
+  border:solid 3px #41403E;
+}
+.border.dotted.thick{
+  border:dotted 3px #41403E;
+}
+.border.dashed.thick{
+  border:dashed 3px #41403E;
+}
+.border.lined.thin{
+  border:solid 2px #41403E;
+}
+.border.dotted.thin{
+  border:dotted 2px #41403E;
+}
+/* end code of stackoverflow */
