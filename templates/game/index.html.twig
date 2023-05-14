@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Game{% endblock %}
+
+{% block body %}
+<style>
+
+.container-flex {
+  margin-left: 5em;
+  margin-right: 5em;
+}
+
+.container-item {
+  margin: 2em;
+}
+
+table {
+  width:100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+}
+
+.join {
+  text-align: center;
+}
+
+.join > a {
+  color: black;
+}
+
+td > div.join:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.bottom-bar {
+  border-bottom:solid 3px #41403E;
+}
+
+</style>
+
+<div class="container-flex">
+
+  <div class="container-item">
+    <h2>Parties en cours</h2>
+
+    <div class="current-parties">
+      <table class="border lined thick">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nom de la partie</th>
+            <th>Nombre de joueurs</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {# {% for game in games %} #}
+          <tr>
+            <td>img</td>
+            {# <td><img src="{{ game.icon }}" alt="{{ game.name }}"></td> #}
+            <td class="bottom-bar">Partida 1</td>
+            {# <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ game.name }}</td> #}
+            <td class="bottom-bar">2/5</td>
+            {# <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ game.numberOfPlayers }}</td> #}
+            <td>
+              <div class="join border lined thick bottom-bar" onclick="goToLink(event)">
+              {# <td class="join border lined thick" onclick="goToLink(event)"> #}
+                <a class="join-link" href="">Rejoindre</a>
+              </div>
+              {# <a class="join-link" href="{{ game.joinUrl }}">Rejoindre</a> #}
+            </td>
+          </tr>
+
+
+          <tr>
+            <td>img</td>
+            {# <td><img src="{{ game.icon }}" alt="{{ game.name }}"></td> #}
+            <td class="bottom-bar">Partida 2</td>
+            {# <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ game.name }}</td> #}
+            <td class="bottom-bar">2/5</td>
+            {# <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ game.numberOfPlayers }}</td> #}
+            <td>
+              <div class="join border lined thick bottom-bar" onclick="goToLink(event)">
+              {# <td class="join border lined thick" onclick="goToLink(event)"> #}
+                <a class="join-link" href="">Rejoindre</a>
+              </div>
+              {# <a class="join-link" href="{{ game.joinUrl }}">Rejoindre</a> #}
+            </td>
+          </tr>
+          {# {% endfor %} #}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="container-item">
+    <h2>Classement</h2>
+
+    <table class="border lined thick">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Victoire / Défaite</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {# {% for rank in ranks %} #}
+        <tr>
+          <td>
+            <span>icon profile<span>
+            {# <span>{{ rank.profile }}</span> #}
+          </td>
+          <td>
+            <span>The boss</span>
+            {# <span>{{ rank.name }}</span> #}
+          </td>
+          <td>
+            <span>3/5</span>
+            {# <span>{{ rank.win }}/{{ rank.lose }}</span> #}
+          </td>
+          <td>
+            <span>59</span>
+            {# <span>{{ rank.points }}</span> #}
+          </td>
+        </tr>
+        {# {% endfor %} #}
+      </tbody>
+    </table>
+  </div> 
+</div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    function goToLink(event) {
+      const joinLink = event.currentTarget.querySelector('.join-link');
+      window.location.href = joinLink.href;
+    }
+  </script>
+{% endblock %}
+
