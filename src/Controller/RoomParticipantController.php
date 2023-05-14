@@ -8,6 +8,7 @@ use App\Entity\RoomParticipant;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,8 +24,6 @@ class RoomParticipantController extends AbstractController
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
-
-
 
         $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
 
@@ -45,7 +44,6 @@ class RoomParticipantController extends AbstractController
             $room_participant = new RoomParticipant();
             $room_participant->setUser($user);
             $room_participant->setRoom($room);
-            $room_participant->setCreatedAt(new \DateTime());
             $entityManager->persist($room_participant);
             $entityManager->flush();
         } else {
@@ -59,9 +57,6 @@ class RoomParticipantController extends AbstractController
         return $this->redirect('/room/' . $id);
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     #[Route('/room/{id}/leave', name: 'app_leave_room')]
     public function leaveRoom(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
@@ -72,13 +67,11 @@ class RoomParticipantController extends AbstractController
         $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
 
         // Check if user is a room_participant
-        $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneBy([
-            'user' => $user,
-            'room' => $id
-        ]);
+        $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user->getId());
+
         if ($room_participant) {
-            // remove user from room_participant
-            $entityManager->remove($room_participant);
+            $room_participant->setIsActive(false);
+            $entityManager->persist($room_participant);
             $entityManager->flush();
         }
 
@@ -86,9 +79,6 @@ class RoomParticipantController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     #[Route('/room/{id}/kick/{user_id}', name: 'app_kick_room')]
     public function kickParticipant(Request $request, EntityManagerInterface $entityManager, int $id, int $user_id): Response
     {
@@ -98,35 +88,31 @@ class RoomParticipantController extends AbstractController
 
         $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
 
-        // Check if user is a room_participant
-        $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneBy([
-            'user' => $user,
-            'room' => $id
-        ]);
-        if (!$room_participant) {
-            return $this->redirectToRoute('app_home');
+        if ($user) {
+            // Check if user is a room_participant
+            $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user->getId());
+            if (!$room_participant) {
+                return $this->redirectToRoute('app_home');
+            }
+
+            // Check if user is the room master
+            $room = $entityManager->getRepository(Room::class)->find($id);
+            if (!$room || $room->getOwner() !== $user) {
+                return $this->redirectToRoute('app_home');
+            }
+
+            // Check if user to kick is a room_participant
+            $user_to_kick = $entityManager->getRepository(User::class)->find($user_id);
+            $room_participant_to_kick = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user_to_kick->getId());
+            if ($room_participant_to_kick) {
+                $room_participant_to_kick->setIsBanned(true);
+                $room_participant_to_kick->setIsActive(false);
+                $entityManager->persist($room_participant_to_kick);
+                $entityManager->flush();
+            }
+            $this->addFlash('success', 'User ' . $user_to_kick->getUsername() . ' kicked');
         }
 
-        // Check if user is the room master
-        $room = $entityManager->getRepository(Room::class)->find($id);
-        if (!$room || $room->getOwner() !== $user) {
-            return $this->redirectToRoute('app_home');
-        }
-
-        // Check if user to kick is a room_participant
-        $user_to_kick = $entityManager->getRepository(User::class)->find($user_id);
-        $room_participant_to_kick = $entityManager->getRepository(RoomParticipant::class)->findOneBy([
-            'user' => $user_to_kick,
-            'room' => $id
-        ]);
-        if ($room_participant_to_kick) {
-            // set is_banned attribute of room_participant to true
-            $room_participant_to_kick->setIsBanned(true);
-            $entityManager->persist($room_participant_to_kick);
-            $entityManager->flush();
-        }
-
-        // When finished, redirect to room
-        return $this->redirect('/room/' . $id);
+        return new JsonResponse(['success' => true]);
     }
 }

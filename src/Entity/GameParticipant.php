@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\GameParticipantRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GameParticipantRepository::class)]
@@ -14,9 +14,9 @@ class GameParticipant
     #[ORM\Column]
     private ?int $id = null;
 
-//    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'gameParticipants')]
-//    #[ORM\JoinColumn(nullable: false)]
-//    private ?Game $game = null;
+    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'gameParticipants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Game $game = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'gameParticipants')]
     #[ORM\JoinColumn(nullable: false)]
@@ -29,7 +29,12 @@ class GameParticipant
     private ?bool $is_owner = false;
 
     #[ORM\Column]
-    private ?DateTime $created_at = null;
+    private ?\DateTimeImmutable $created_at;
+
+    public function __construct()
+    {
+        $this->created_at = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -69,15 +74,9 @@ class GameParticipant
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->created_at;
-    }
-
-    public function setCreatedAt(DateTime $created_at): GameParticipant
-    {
-        $this->created_at = $created_at;
-        return $this;
     }
 
     public function __toString(): string

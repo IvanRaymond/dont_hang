@@ -3,9 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RoomParticipantRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints\Date;
 
 #[ORM\Entity(repositoryClass: RoomParticipantRepository::class)]
 class RoomParticipant
@@ -25,7 +24,7 @@ class RoomParticipant
 
 
     #[ORM\Column]
-    private ?DateTime $createdAt = null;
+    private ?\DateTimeImmutable $created_at;
 
     #[ORM\Column]
     private ?bool $is_active = true;
@@ -35,6 +34,11 @@ class RoomParticipant
 
     #[ORM\Column]
     private ?bool $is_banned = false;
+
+    public function __construct()
+    {
+        $this->created_at = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -63,15 +67,9 @@ class RoomParticipant
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeImmutable
     {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): RoomParticipant
-    {
-        $this->createdAt = $createdAt;
-        return $this;
+        return $this->created_at;
     }
 
     public function getIsActive(): ?bool
