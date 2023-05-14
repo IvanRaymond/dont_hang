@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Room{% endblock %}
+
+{% block body %}
+    <h1>Create Room</h1>
+
+    {{ form_start(roomForm) }}
+    {{ form_row(roomForm.name) }}
+    {{ form_row(roomForm.capacity) }}
+    {{ form_row(roomForm.game_count, {
+        label: 'Number of games'
+    }) }}
+    {{ form_row(roomForm.is_private, {
+        label: 'Private room'
+    }) }}
+    {{ form_row(roomForm.password) }}
+
+    <button type="submit" class="btn">Register</button>
+    {{ form_end(roomForm) }}
+{% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RoomRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
@@ -15,6 +16,10 @@ class Room
 
     #[ORM\Column]
     private ?string $name = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'rooms')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     #[ORM\Column]
     private ?int $capacity = null;
@@ -30,6 +35,9 @@ class Room
 
     #[ORM\Column(nullable: true)]
     private ?string $password = null;
+
+    #[ORM\Column]
+    private ?DateTime $created_at = null;
 
     public function getId(): ?int
     {
@@ -103,4 +111,25 @@ class Room
         return $this;
     }
 
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): Room
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(DateTime $created_at): Room
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
 }
