@@ -1,0 +1,225 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AccountController!{% endblock %}
+
+{% block body %}
+<style>
+body {
+    font-family: kg_indie_flowerregular;
+}
+
+.container-flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.container-item {
+    width: 100%;
+}
+
+.container-item-avatar {
+    flex-basis: 33.33%;
+    flex-grow: 0;
+}
+
+.container-item-information-player {
+		width: 100%;
+}
+
+#avatar {
+	background:transparent;
+	padding:0.5rem 0.5rem;
+	margin:0 0.5rem;
+	font-size:1rem;
+
+	border-top-left-radius: 255px 15px;
+	border-top-right-radius: 15px 225px;
+	border-bottom-right-radius: 225px 15px;
+	border-bottom-left-radius:15px 255px;
+}
+
+#avatar:hover{
+   box-shadow:2px 8px 4px -6px hsla(0,0%,0%,.3);
+}
+#avatar.lined.thick{
+   border:solid 3px #41403E;
+}
+
+ul {
+	padding: 0;
+  list-style-type: none;
+}
+
+
+.lose-background {
+	background-color: #952228;
+}
+
+.win-background {
+	background-color: #313B80;
+}
+
+.game-content {
+	display: flex;
+	flex-direction: row;
+}
+
+.game {
+  flex-basis: 23.33%;
+}
+
+.word {
+	flex-basis: 43.33%;
+}
+.points {
+	flex-basis: 33.33%;
+}
+
+.bar {
+	width: 50px;
+  border-bottom: 1px solid #ccc;
+}
+
+.timestamp, .length {
+	font-size: 12px;
+}
+
+{# start code of border form stackoverflow 43694588 #}
+#border {
+      background:transparent;
+      padding:0.5rem 0.5rem;
+      margin:0 0.5rem;
+      font-size:1rem;
+
+      border-top-left-radius: 255px 15px;
+      border-top-right-radius: 15px 225px;
+      border-bottom-right-radius: 225px 15px;
+      border-bottom-left-radius:15px 255px;
+}
+
+#border:hover{
+   box-shadow:2px 8px 4px -6px hsla(0,0%,0%,.3);
+}
+#border.lined.thick{
+   border:solid 3px #41403E;
+}
+#border.dotted.thick{
+   border:dotted 3px #41403E;
+}
+#border.dashed.thick{
+  border:dashed 3px #41403E;
+}
+#border.lined.thin{
+   border:solid 2px #41403E;
+}
+#border.dotted.thin{
+   border:dotted 2px #41403E;
+}
+{# end code of stackoverflow #}
+
+</style>
+
+<div class="container-flex">
+    <div class="container-item">
+        <div class="user-information container-flex">
+            <div class="container-item-avatar">
+							<span class="border">
+                <svg id="avatar" class="lined thick" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>
+                {# <img src="" alt="avatar"/> #}
+							</span>
+            </div> 
+            <div class="container-item-information-player">
+                <p> Joueur 1 </p>
+                <p> Adresse mail : test@gmail.com</p>
+                <a href=""> Modifier vos information</a>
+            </div>
+        </div>
+        <div class="user-stats">
+        <div class="chart-container" style="position: relative; height:40vh; width:40vw">
+            <canvas id="myChart"></canvas>
+        </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                    labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin'],
+                    datasets: [{
+                        label: 'Nombre de parties joués DEMO',
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                    },
+                    options: {
+                        responsive : true,
+                    scales: {
+                        y: {
+                        beginAtZero: true
+                        }
+                    }
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="container-item">
+        <h2>Historique des parties</h2>
+        <div class="history-games">
+            <ul>
+    					{# {% for partie in parties %} #}
+						      <li>
+										{# <div class="{{ partie.resultat == 'perdant' ? 'lose-background' : 'win-background' }}"> #}
+											<div class="content">
+												<div class="game-content">
+													<div class="game">
+														<div class="timestamp">
+															25-12-2000
+															{# <span>{{ partie.date }}</span> #}
+														</div>
+														<div class="bar">
+														</div>
+														<div class="result">
+															Victoire
+															{# <span>{{ partie.resultat }}</span> #}
+														</div>
+														<div class="length">
+														 	4:10
+															{# <span>{{ partie.length }}</span> #}
+														</span>
+													</div>
+												</div>
+												<div class="word">
+													Le mot était : poufsouffle
+													{# Le mot était : <span>{{ partie.mot }}</span> #}
+												</div>
+												<div class="points">
+													95 pts
+													{# <span>{{ item.nombre_de_points }}</span> pts #}
+												</div>
+											</div>
+										{# </div> #}
+									</li>
+								{# {% endfor %} #}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
