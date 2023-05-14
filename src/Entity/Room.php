@@ -41,7 +41,7 @@ class Room
     #[ORM\Column]
     private ?DateTime $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Game::class)]
+    #[ORM\ManyToMany(targetEntity: Game::class, inversedBy: 'rooms')]
     private Collection $games;
 
     public function __construct()

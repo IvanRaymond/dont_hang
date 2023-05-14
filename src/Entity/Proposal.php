@@ -25,7 +25,7 @@ class Proposal
     private ?string $content = null;
 
     #[ORM\Column]
-    private ?int $points = null;
+    private ?int $points = 0;
 
     #[ORM\Column]
     private ?bool $is_correct = null;
