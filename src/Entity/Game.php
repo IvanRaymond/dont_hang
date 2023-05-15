@@ -16,18 +16,18 @@ class Game
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'games')]
+    #[ORM\ManyToOne(targetEntity: Room::class, inversedBy: 'games')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Room $room = null;
 
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $word = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $duration = null;
+    #[ORM\Column]
+    private ?int $duration = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $finished_at = null;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $finished_at = null;
 
     #[ORM\Column]
     private ?bool $is_active = true;
@@ -35,20 +35,16 @@ class Game
     #[ORM\Column]
     private ?bool $is_won = false;
 
-    #[ORM\ManyToOne(inversedBy: 'games')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'games')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $winner_id = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToMany(targetEntity: Proposal::class, inversedBy: 'games')]
-    private Collection $proposals;
-
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
-        $this->proposals = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -80,24 +76,24 @@ class Game
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeInterface
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTimeInterface $duration): self
+    public function setDuration(int $duration): self
     {
         $this->duration = $duration;
 
         return $this;
     }
 
-    public function getFinishedAt(): ?\DateTimeInterface
+    public function getFinishedAt(): ?\DateTime
     {
         return $this->finished_at;
     }
 
-    public function setFinishedAt(\DateTimeInterface $finished_at): self
+    public function setFinishedAt(\DateTime $finished_at): self
     {
         $this->finished_at = $finished_at;
 
@@ -148,36 +144,6 @@ class Game
     public function setCreatedAt(\DateTimeImmutable $created_at): self
     {
         $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Proposal>
-     */
-    public function getProposals(): Collection
-    {
-        return $this->proposals;
-    }
-
-    public function addProposal(Proposal $proposal): self
-    {
-        if (!$this->proposals->contains($proposal)) {
-            $this->proposals->add($proposal);
-            $proposal->setGame($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProposal(Proposal $proposal): self
-    {
-        if ($this->proposals->removeElement($proposal)) {
-            // set the owning side to null (unless already changed)
-            if ($proposal->getGame() === $this) {
-                $proposal->setGame(null);
-            }
-        }
 
         return $this;
     }
