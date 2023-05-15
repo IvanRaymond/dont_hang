@@ -24,10 +24,10 @@ class Game
     private ?string $word = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $time = null;
+    private ?\DateTimeInterface $duration = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $end_time = null;
+    private ?\DateTimeInterface $finished_at = null;
 
     #[ORM\Column]
     private ?bool $is_active = true;
@@ -80,26 +80,26 @@ class Game
         return $this;
     }
 
-    public function getTime(): ?\DateTimeInterface
+    public function getDuration(): ?\DateTimeInterface
     {
-        return $this->time;
+        return $this->duration;
     }
 
-    public function setTime(\DateTimeInterface $time): self
+    public function setDuration(\DateTimeInterface $duration): self
     {
-        $this->time = $time;
+        $this->duration = $duration;
 
         return $this;
     }
 
-    public function getEndTime(): ?\DateTimeInterface
+    public function getFinishedAt(): ?\DateTimeInterface
     {
-        return $this->end_time;
+        return $this->finished_at;
     }
 
-    public function setEndTime(\DateTimeInterface $end_time): self
+    public function setFinishedAt(\DateTimeInterface $finished_at): self
     {
-        $this->end_time = $end_time;
+        $this->finished_at = $finished_at;
 
         return $this;
     }
