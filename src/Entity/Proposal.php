@@ -13,11 +13,11 @@ class Proposal
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'proposals')]
+    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'proposals')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Game $game = null;
 
-    #[ORM\ManyToOne(inversedBy: 'proposals')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'proposals')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
@@ -32,6 +32,11 @@ class Proposal
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
+    
+    public function __construct()
+    {
+        $this->created_at = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -101,12 +106,5 @@ class Proposal
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
-    {
-        $this->created_at = $created_at;
-
-        return $this;
     }
 }
