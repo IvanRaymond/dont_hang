@@ -1,0 +1,102 @@
+nav:
+  menu:
+    login: Connexion
+    logout: Déconnexion
+    register: Inscription
+    account: Mon compte
+home:
+  table:
+    game:
+      title: Parties en cours
+      name: Nom
+      player_count: Nombre de joueurs
+      join: Rejoindre
+    ranking:
+      title: Classement
+      name: Nom
+      score: Score
+      games_played: Parties jouées
+      games_won: Parties remportées
+      games_lost: Parties perdues
+  popup:
+    join_game:
+      title: Insérez le mot de passe pour rejoindre la partie
+      placeholder: Mot de passe
+      button: Rejoindre
+room:
+  game_master: Maître du jeu
+  popup:
+    proposal:
+      letter:
+        title: Proposer une lettre
+        placeholder: Lettre
+        button: Envoyer
+      word:
+        title: Proposer un mot
+        placeholder: Mot
+        button: Envoyer
+    quit:
+      title: Voulez-vous vraiment quitter la partie ?
+      accept: Oui
+      cancel: Non
+auth:
+  fields:
+    email:
+      title: Email
+      placeholder: Entrez votre email
+    username:
+      title: Nom d'utilisateur
+      placeholder: Entrez votre nom d'utilisateur
+    password:
+      title: Mot de passe
+      placeholder: Entrez votre mot de passe
+    password_confirmation:
+      title: Confirmation du mot de passe
+      placeholder: Entrez la confirmation de votre mot de passe
+  links:
+    forgot_password: Mot de passe oublié ?
+    Sign_in: Connexion
+    Sign_up: Inscription
+  login:
+    title: Connexion
+    button: Connexion
+  register:
+    title:  Inscription
+    button: Inscription
+  reset_password:
+    title: Reinitaliser le mot de passe
+    button: Envoyer
+    success: Un email vous a été envoyé avec les instructions pour réinitialiser votre mot de passe
+    error: Une erreur est survenue
+  change_password:
+    title: Changer le mot de passe
+    button: Envoyer
+    success: Votre mot de passe a été changé
+    error: Une erreur est survenue
+account:
+  title: Mon compte
+  info:
+    title: Mes informations
+    email: Email
+    username: Nom d'utilisateur
+  update:
+    title: Mettre à jour mes informations
+    email:
+      title: Email
+      placeholder: Entrez votre email
+    password:
+      title: Mot de passe
+      placeholder: Entrez votre mot de passe
+    password_confirmation:
+      title: Confirmation du mot de passe
+      placeholder: Entrez la confirmation de votre mot de passe
+    button: Envoyer
+    success: Vos informations ont été mises à jour
+    error: Une erreur est survenue
+  table:
+    history:
+      title: Historique des parties
+      name: Nom
+      score: Score
+      status: Statut
+
