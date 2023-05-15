@@ -25,6 +25,11 @@ class Ranking
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
+    
+    public function __construct()
+    {
+        $this->created_at = new DateTimeImmutable();
+    }
 
     public function __construct()
     {
