@@ -5,6 +5,7 @@ nav:
     register: Register
     account: My account
 home:
+  title: Home
   table:
     game:
       title: On going games
@@ -42,34 +43,34 @@ room:
 auth:
   fields:
     email:
-      title: Email
+      label: Email
       placeholder: Enter your email
     username:
-      title: Username
+      label: Username
       placeholder: Enter your username
     password:
-      title: Password
+      label: Password
       placeholder: Enter your password
     password_confirmation:
-      title: Password confirmation
+      label: Password confirmation
       placeholder: Enter your password confirmation
   links:
     forgot_password: Forgot password?
     Sign_in: Sign in
     Sign_up: Sign up
   login:
-    title: Login
+    label: Login
     button: Login
   register:
-    title: Sign up
+    label: Sign up
     button: Sign up
   reset_password:
-    title: Reset password
+    label: Reset password
     button: Send
     success: An email has been sent to you with a link to reset your password
     error: An error has occurred
   change_password:
-      title: Change password
+      label: Change password
       button: Change password
       success: Your password has been changed
       error: An error has occurred

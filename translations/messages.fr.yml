@@ -5,6 +5,7 @@ nav:
     register: Inscription
     account: Mon compte
 home:
+  title: Accueil
   table:
     game:
       title: Parties en cours
@@ -42,34 +43,34 @@ room:
 auth:
   fields:
     email:
-      title: Email
+      label: Email
       placeholder: Entrez votre email
     username:
-      title: Nom d'utilisateur
+      label: Nom d'utilisateur
       placeholder: Entrez votre nom d'utilisateur
     password:
-      title: Mot de passe
+      label: Mot de passe
       placeholder: Entrez votre mot de passe
     password_confirmation:
-      title: Confirmation du mot de passe
+      label: Confirmation du mot de passe
       placeholder: Entrez la confirmation de votre mot de passe
   links:
     forgot_password: Mot de passe oublié ?
     Sign_in: Connexion
     Sign_up: Inscription
   login:
-    title: Connexion
+    label: Connexion
     button: Connexion
   register:
-    title:  Inscription
+    label:  Inscription
     button: Inscription
   reset_password:
-    title: Reinitaliser le mot de passe
+    label: Reinitaliser le mot de passe
     button: Envoyer
     success: Un email vous a été envoyé avec les instructions pour réinitialiser votre mot de passe
     error: Une erreur est survenue
   change_password:
-    title: Changer le mot de passe
+    label: Changer le mot de passe
     button: Envoyer
     success: Votre mot de passe a été changé
     error: Une erreur est survenue
