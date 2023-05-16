@@ -38,6 +38,11 @@ class Proposal
         $this->created_at = new DateTimeImmutable();
     }
 
+    public function __construct()
+    {
+        $this->created_at = new DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
