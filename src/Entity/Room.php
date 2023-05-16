@@ -3,9 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\RoomRepository;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
@@ -39,14 +36,11 @@ class Room
     private ?string $password = null;
 
     #[ORM\Column]
-    private ?DateTime $created_at = null;
-
-    #[ORM\ManyToMany(targetEntity: Game::class, inversedBy: 'rooms')]
-    private Collection $games;
+    private ?\DateTimeImmutable $created_at;
 
     public function __construct()
     {
-        $this->games = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -132,44 +126,8 @@ class Room
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->created_at;
-    }
-
-    public function setCreatedAt(DateTime $created_at): Room
-    {
-        $this->created_at = $created_at;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Game>
-     */
-    public function getGames(): Collection
-    {
-        return $this->games;
-    }
-
-    public function addGame(Game $game): self
-    {
-        if (!$this->games->contains($game)) {
-            $this->games->add($game);
-            $game->setRoom($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGame(Game $game): self
-    {
-        if ($this->games->removeElement($game)) {
-            // set the owning side to null (unless already changed)
-            if ($game->getRoom() === $this) {
-                $game->setRoom(null);
-            }
-        }
-
-        return $this;
     }
 }
