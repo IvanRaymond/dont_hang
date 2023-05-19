@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ProposalRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProposalRepository::class)]
@@ -31,13 +32,8 @@ class Proposal
     private ?bool $is_correct = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $created_at;
     
-    public function __construct()
-    {
-        $this->created_at = new DateTimeImmutable();
-    }
-
     public function __construct()
     {
         $this->created_at = new DateTimeImmutable();
