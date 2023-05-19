@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Proposal;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +40,47 @@ class ProposalRepository extends ServiceEntityRepository
         }
     }
 
-   /**
-    * @return Proposal[] Returns an array of Proposal objects
-    */
-   public function findByExampleField($value): array
-   {
-       return $this->createQueryBuilder('p')
-           ->andWhere('p.exampleField = :val')
-           ->setParameter('val', $value)
-           ->orderBy('p.id', 'ASC')
-           ->setMaxResults(10)
-           ->getQuery()
-           ->getResult()
-       ;
-   }
+    public function findByGame(int $gameId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.game = :gameId')
+            ->setParameter('gameId', $gameId)
+            ->getQuery()
+            ->getResult();
+    }
 
-   public function findOneBySomeField($value): ?Proposal
-   {
-       return $this->createQueryBuilder('p')
-           ->andWhere('p.exampleField = :val')
-           ->setParameter('val', $value)
-           ->getQuery()
-           ->getOneOrNullResult()
-       ;
-   }
+    public function findByUser(int $userId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByUserAndGame(int $userId, int $gameId)
+    {
+        try {
+            return $this->createQueryBuilder('p')
+                ->andWhere('p.user = :userId')
+                ->andWhere('p.game = :gameId')
+                ->setParameter('userId', $userId)
+                ->setParameter('gameId', $gameId)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
+    }
+
+    public function findCorrectByGame(int $gameId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.game = :gameId')
+            ->andWhere('p.is_correct = true')
+            ->setParameter('gameId', $gameId)
+            ->getQuery()
+            ->getResult();
+    }
+
 }
