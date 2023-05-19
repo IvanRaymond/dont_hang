@@ -14,7 +14,7 @@ class GameParticipant
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'gameParticipants')]
+    #[ORM\ManyToOne(inversedBy: 'gameParticipants')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Game $game = null;
 
@@ -24,9 +24,6 @@ class GameParticipant
 
     #[ORM\Column]
     private ?bool $is_active = true;
-
-    #[ORM\Column]
-    private ?bool $is_owner = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
@@ -39,6 +36,17 @@ class GameParticipant
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getGame(): ?Game
+    {
+        return $this->game;
+    }
+
+    public function setGame(Game $game): GameParticipant
+    {
+        $this->game = $game;
+        return $this;
     }
 
     public function getUser(): ?User
@@ -60,17 +68,6 @@ class GameParticipant
     public function setIsActive(bool $is_active): GameParticipant
     {
         $this->is_active = $is_active;
-        return $this;
-    }
-
-    public function getIsOwner(): ?bool
-    {
-        return $this->is_owner;
-    }
-
-    public function setIsOwner(bool $is_owner): GameParticipant
-    {
-        $this->is_owner = $is_owner;
         return $this;
     }
 
