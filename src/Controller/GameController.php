@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -61,6 +60,9 @@ class GameController extends AbstractController
         $duration = $request->query->get('duration');
         $word = $request->query->get('word');
         $init = $request->query->get('init');
+        if(!$duration || !$word || !$init){
+            return new Response('Missing parameters', 400);
+        }
         // Create game
         $game = new Game();
         $game->setRoom($room);
@@ -79,9 +81,18 @@ class GameController extends AbstractController
             $entityManager->flush();
         }
         // Async timer task, The timer task will update the game status to inactive when the timer is finished
-//        $process = new Process(['php', 'bin/console', 'app:game:timer', $game->getId()]);
+        // Doesn't work as expected, the process is not detached from the parent process
+        // The process is killed when the Response is returned
+//        $process = new Process(['php', 'bin/console', 'app:game-timer', $duration, $game->getId()]);
+//        $process->disableOutput();
 //        $process->start();
         // TODO: Push to all subscribers that game has started
+
+        sleep($duration);
+        $game->setActive(false);
+        $entityManager->persist($game);
+        $entityManager->flush();
+
         $json = $this->getSerializedGame($game);
         return new Response($json, 200, [
             'Content-Type' => 'application/json'
