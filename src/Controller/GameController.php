@@ -79,8 +79,8 @@ class GameController extends AbstractController
             $entityManager->flush();
         }
         // Async timer task, The timer task will update the game status to inactive when the timer is finished
-        $process = new Process(['php', 'bin/console', 'app:game:timer', $game->getId()]);
-        $process->start();
+//        $process = new Process(['php', 'bin/console', 'app:game:timer', $game->getId()]);
+//        $process->start();
         // TODO: Push to all subscribers that game has started
         $json = $this->getSerializedGame($game);
         return new Response($json, 200, [
@@ -93,13 +93,13 @@ class GameController extends AbstractController
     {
         // Check if there is already a game active
         $room = $entityManager->getRepository(Room::class)->find($roomId);
-        $game = $entityManager->getRepository(Game::class)->findLatestByRoom($room);
+        $game = $entityManager->getRepository(Game::class)->findLatestByRoom($room->getId());
         if (!$game) {
-            return $this->json([]);
+            return new Response('Game not found', 404);
         }
         // Check if game is already ended
-        if ($game->isActive()) {
-            return $this->json([]);
+        if (!$game->isActive()) {
+            return new Response('Game already ended', 400);
         }
         // End game
         $game->setActive(false);
