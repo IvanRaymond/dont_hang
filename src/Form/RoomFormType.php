@@ -17,7 +17,7 @@ class RoomFormType extends AbstractType
             ->add('name')
             ->add('capacity', NumberType::class)
             ->add('game_count', NumberType::class)
-            ->add('is_private', CheckboxType::class, array('required' => false))
+            ->add('private', CheckboxType::class, array('required' => false))
             ->add('password');
     }
 

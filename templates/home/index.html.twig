@@ -56,9 +56,15 @@ td > div.join:hover {
         </thead>
         <tbody>
            {% for room in rooms %}
+             {% set activeCount = 0 %}
+             {% for participant in room.roomParticipants %}
+               {% if participant.isActive() %}
+                 {% set activeCount = activeCount + 1 %}
+               {% endif %}
+             {% endfor %}
           <tr>
             <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ room.name }}</td>
-            <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ room.roomParticipants.count }}/{{ room.capacity }}</td>
+            <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ activeCount }}/{{ room.capacity }}</td>
             <td>
               <div class="join border lined thick bottom-bar" onclick="goToLink(event)">
                 <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>

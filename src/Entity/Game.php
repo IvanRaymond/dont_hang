@@ -22,6 +22,9 @@ class Game
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $word = null;
 
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $word_status = null;
+
     #[ORM\Column]
     private ?int $duration = null;
 
@@ -29,14 +32,14 @@ class Game
     private ?int $finished_in = null;
 
     #[ORM\Column]
-    private ?bool $is_active = true;
+    private ?bool $active = true;
 
     #[ORM\Column]
-    private ?bool $is_won = false;
+    private ?bool $won = false;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?User $winner_id = null;
+    private ?User $winner = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
@@ -83,6 +86,18 @@ class Game
         return $this;
     }
 
+    public function getWordStatus(): ?string
+    {
+        return $this->word_status;
+    }
+
+    public function setWordStatus(?string $word_status): self
+    {
+        $this->word_status = $word_status;
+
+        return $this;
+    }
+
     public function getDuration(): ?int
     {
         return $this->duration;
@@ -107,38 +122,38 @@ class Game
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function isActive(): ?bool
     {
-        return $this->is_active;
+        return $this->active;
     }
 
-    public function setIsActive(bool $is_active): self
+    public function setActive(bool $active): self
     {
-        $this->is_active = $is_active;
+        $this->active = $active;
 
         return $this;
     }
 
-    public function isIsWon(): ?bool
+    public function isWon(): ?bool
     {
-        return $this->is_won;
+        return $this->won;
     }
 
-    public function setIsWon(?bool $is_won): self
+    public function setWon(?bool $won): self
     {
-        $this->is_won = $is_won;
+        $this->won = $won;
 
         return $this;
     }
 
-    public function getWinnerId(): ?User
+    public function getWinner(): ?User
     {
-        return $this->winner_id;
+        return $this->winner;
     }
 
-    public function setWinnerId(?User $winner_id): self
+    public function setWinner(?User $winner): self
     {
-        $this->winner_id = $winner_id;
+        $this->winner = $winner;
 
         return $this;
     }

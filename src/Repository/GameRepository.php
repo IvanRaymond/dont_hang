@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Game;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -57,13 +56,17 @@ class GameRepository extends ServiceEntityRepository
 
     public function findLatestByRoom(int $roomId, int $limit = 1)
     {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.room = :roomId')
-            ->setParameter('roomId', $roomId)
-            ->orderBy('g.id', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+        try {
+            return $this->createQueryBuilder('g')
+                ->andWhere('g.room = :roomId')
+                ->setParameter('roomId', $roomId)
+                ->orderBy('g.id', 'DESC')
+                ->setMaxResults($limit)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 
 }

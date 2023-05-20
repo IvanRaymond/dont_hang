@@ -27,13 +27,13 @@ class RoomParticipant
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\Column]
-    private ?bool $is_active = true;
+    private ?bool $active = true;
 
     #[ORM\Column]
-    private ?bool $is_owner = false;
+    private ?bool $owner = false;
 
     #[ORM\Column]
-    private ?bool $is_banned = false;
+    private ?bool $banned = false;
 
     public function __construct()
     {
@@ -72,36 +72,36 @@ class RoomParticipant
         return $this->created_at;
     }
 
-    public function getIsActive(): ?bool
+    public function isActive(): ?bool
     {
-        return $this->is_active;
+        return $this->active;
     }
 
-    public function setIsActive(bool $is_active): RoomParticipant
+    public function setActive(bool $active): RoomParticipant
     {
-        $this->is_active = $is_active;
+        $this->active = $active;
         return $this;
     }
 
-    public function getIsOwner(): ?bool
+    public function getOwner(): ?bool
     {
-        return $this->is_owner;
+        return $this->owner;
     }
 
-    public function setIsOwner(bool $is_owner): RoomParticipant
+    public function setOwner(bool $owner): RoomParticipant
     {
-        $this->is_owner = $is_owner;
+        $this->owner = $owner;
         return $this;
     }
 
-    public function getIsBanned(): ?bool
+    public function isBanned(): ?bool
     {
-        return $this->is_banned;
+        return $this->banned;
     }
 
-    public function setIsBanned(bool $is_banned): RoomParticipant
+    public function setBanned(bool $banned): RoomParticipant
     {
-        $this->is_banned = $is_banned;
+        $this->banned = $banned;
         return $this;
     }
 

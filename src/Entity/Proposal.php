@@ -29,11 +29,11 @@ class Proposal
     private ?int $points = 0;
 
     #[ORM\Column]
-    private ?bool $is_correct = null;
+    private ?bool $correct = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
-    
+
     public function __construct()
     {
         $this->created_at = new DateTimeImmutable();
@@ -92,14 +92,14 @@ class Proposal
         return $this;
     }
 
-    public function isIsCorrect(): ?bool
+    public function isCorrect(): ?bool
     {
-        return $this->is_correct;
+        return $this->correct;
     }
 
-    public function setIsCorrect(bool $is_correct): self
+    public function setCorrect(bool $correct): self
     {
-        $this->is_correct = $is_correct;
+        $this->correct = $correct;
 
         return $this;
     }
