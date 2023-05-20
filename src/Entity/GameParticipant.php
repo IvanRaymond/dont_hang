@@ -23,7 +23,7 @@ class GameParticipant
     private ?User $user = null;
 
     #[ORM\Column]
-    private ?bool $is_active = true;
+    private ?bool $active = true;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
@@ -60,14 +60,14 @@ class GameParticipant
         return $this;
     }
 
-    public function getIsActive(): ?bool
+    public function isActive(): ?bool
     {
-        return $this->is_active;
+        return $this->active;
     }
 
-    public function setIsActive(bool $is_active): GameParticipant
+    public function setActive(bool $active): GameParticipant
     {
-        $this->is_active = $is_active;
+        $this->active = $active;
         return $this;
     }
 

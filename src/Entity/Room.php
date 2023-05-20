@@ -29,10 +29,10 @@ class Room
     private ?int $game_count = null;
 
     #[ORM\Column]
-    private ?bool $is_active = true;
+    private ?bool $active = true;
 
     #[ORM\Column]
-    private ?bool $is_private = false;
+    private ?bool $private = false;
 
     #[ORM\Column(nullable: true)]
     private ?string $password = null;
@@ -92,25 +92,25 @@ class Room
         return $this;
     }
 
-    public function getIsActive(): ?bool
+    public function isActive(): ?bool
     {
-        return $this->is_active;
+        return $this->active;
     }
 
-    public function setIsActive(bool $is_active): Room
+    public function setActive(bool $active): Room
     {
-        $this->is_active = $is_active;
+        $this->active = $active;
         return $this;
     }
 
-    public function getIsPrivate(): ?bool
+    public function isPrivate(): ?bool
     {
-        return $this->is_private;
+        return $this->private;
     }
 
-    public function setIsPrivate(bool $is_private): Room
+    public function setPrivate(bool $private): Room
     {
-        $this->is_private = $is_private;
+        $this->private = $private;
         return $this;
     }
 

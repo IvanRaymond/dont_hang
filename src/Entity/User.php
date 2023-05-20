@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -45,9 +47,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
+    #[ORM\OneToMany(mappedBy: 'winner', targetEntity: Game::class)]
+    private Collection $games;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Proposal::class)]
+    private Collection $proposals;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Room::class)]
+    private Collection $rooms;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: RoomParticipant::class)]
+    public Collection $roomParticipants;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->games = new ArrayCollection();
+        $this->proposals = new ArrayCollection();
+        $this->rooms = new ArrayCollection();
+        $this->roomParticipants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -91,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMaster(): ?bool
+    public function isMaster(): ?bool
     {
         return $this->master;
     }
@@ -147,7 +165,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getActive(): ?bool
+    public function isActive(): ?bool
     {
         return $this->active;
     }
@@ -176,5 +194,125 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->username;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGames(): Collection
+    {
+        return $this->games;
+    }
+
+    public function addGame(Game $game): self
+    {
+        if (!$this->games->contains($game)) {
+            $this->games->add($game);
+            $game->setWinner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGame(Game $game): self
+    {
+        if ($this->games->removeElement($game)) {
+            // set the owning side to null (unless already changed)
+            if ($game->getWinner() === $this) {
+                $game->setWinner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Proposal>
+     */
+    public function getProposals(): Collection
+    {
+        return $this->proposals;
+    }
+
+    public function addProposal(Proposal $proposal): self
+    {
+        if (!$this->proposals->contains($proposal)) {
+            $this->proposals->add($proposal);
+            $proposal->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProposal(Proposal $proposal): self
+    {
+        if ($this->proposals->removeElement($proposal)) {
+            // set the owning side to null (unless already changed)
+            if ($proposal->getUser() === $this) {
+                $proposal->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Room>
+     */
+    public function getRooms(): Collection
+    {
+        return $this->rooms;
+    }
+
+    public function addRoom(Room $room): self
+    {
+        if (!$this->rooms->contains($room)) {
+            $this->rooms->add($room);
+            $room->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoom(Room $room): self
+    {
+        if ($this->rooms->removeElement($room)) {
+            // set the owning side to null (unless already changed)
+            if ($room->getOwner() === $this) {
+                $room->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RoomParticipant>
+     */
+    public function getRoomParticipants(): Collection
+    {
+        return $this->roomParticipants;
+    }
+
+    public function addRoomParticipant(RoomParticipant $roomParticipant): self
+    {
+        if (!$this->roomParticipants->contains($roomParticipant)) {
+            $this->roomParticipants->add($roomParticipant);
+            $roomParticipant->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoomParticipant(RoomParticipant $roomParticipant): self
+    {
+        if ($this->roomParticipants->removeElement($roomParticipant)) {
+            // set the owning side to null (unless already changed)
+            if ($roomParticipant->getUser() === $this) {
+                $roomParticipant->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
