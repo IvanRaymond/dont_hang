@@ -15,11 +15,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RoomParticipantController extends AbstractController
 {
-    /**
-     * @throws NonUniqueResultException
-     */
     #[Route('/room/{id}/join', name: 'app_join_room')]
-    public function joinRoom(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    public function joinRoom(EntityManagerInterface $entityManager, int $id): Response
     {
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
@@ -31,8 +28,12 @@ class RoomParticipantController extends AbstractController
         $room_participant_count = $entityManager->getRepository(RoomParticipant::class)->getCountByRoomId($id);
         $room = $entityManager->getRepository(Room::class)->findOneById($id);
 
+        if ($room->getOwner() === $user) {
+            return $this->redirectToRoute('app_room', ['id' => $id]);
+        }
+
         // if room doesn't exist or is at capacity or is not active, redirect to home
-        if(!$room || $room_participant_count >= $room->getCapacity() || !$room->getIsActive()) {
+        if($room_participant_count >= $room->getCapacity() || !$room->isActive()) {
             return $this->redirectToRoute('app_home');
         }
 
@@ -48,7 +49,7 @@ class RoomParticipantController extends AbstractController
             $entityManager->flush();
         } else {
             // Check if user is banned
-            if ($room_participant->getIsBanned()) {
+            if ($room_participant->isBanned()) {
                 return $this->redirectToRoute('app_home');
             }
         }
@@ -70,7 +71,7 @@ class RoomParticipantController extends AbstractController
         $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user->getId());
 
         if ($room_participant) {
-            $room_participant->setIsActive(false);
+            $room_participant->setActive(false);
             $entityManager->persist($room_participant);
             $entityManager->flush();
         }
@@ -105,8 +106,8 @@ class RoomParticipantController extends AbstractController
             $user_to_kick = $entityManager->getRepository(User::class)->find($user_id);
             $room_participant_to_kick = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user_to_kick->getId());
             if ($room_participant_to_kick) {
-                $room_participant_to_kick->setIsBanned(true);
-                $room_participant_to_kick->setIsActive(false);
+                $room_participant_to_kick->setBanned(true);
+                $room_participant_to_kick->setActive(false);
                 $entityManager->persist($room_participant_to_kick);
                 $entityManager->flush();
             }

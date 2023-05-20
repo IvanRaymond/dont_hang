@@ -23,7 +23,7 @@ class RoomController extends AbstractController
 
         $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
         if ($user) {
-            if (!$user->getMaster()) {
+            if (!$user->isMaster()) {
                 return $this->redirectToRoute('app_home');
             }
 
@@ -35,7 +35,7 @@ class RoomController extends AbstractController
                 $room->setOwner($user);
                 $entityManager->persist($room);
                 $entityManager->flush();
-                return $this->redirect('/room/' . $room->getId() . '/join');
+                return $this->redirectToRoute('app_room', ['id' => $room->getId()]);
             }
 
             return $this->render('room/create.html.twig', [
@@ -54,24 +54,27 @@ class RoomController extends AbstractController
         }
 
         $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
+        $room = $entityManager->getRepository(Room::class)->find($id);
+
+        if(!$room) {
+            return $this->redirectToRoute('app_home');
+        }
 
         if ($user) {
+            if($room->getOwner() === $user) {
+                return $this->render('room/room.html.twig', [
+                    'room' => $room,
+                ]);
+            }
             // Check if user is a room_participant and try to add him if not
             $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user->getId());
             if (!$room_participant) {
                 // if the room is not password protected add user
-                $room = $entityManager->getRepository(Room::class)->find($id);
-                if (!$room->getIsPrivate()) {
-                    return $this->redirect('/room/' . $id . '/join');
+                if (!$room->isPrivate()) {
+                    return $this->redirectToRoute('app_join_room', ['id' => $id]);
                 } else {
                     return $this->redirectToRoute('app_home');
                 }
-            }
-
-            $room = $entityManager->getRepository(Room::class)->find($id);
-
-            if (!$room) {
-                return $this->redirectToRoute('app_home');
             }
 
             return $this->render('room/room.html.twig', [
