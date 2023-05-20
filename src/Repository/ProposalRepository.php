@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Proposal;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -77,7 +76,7 @@ class ProposalRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.game = :gameId')
-            ->andWhere('p.is_correct = true')
+            ->andWhere('p.correct = true')
             ->setParameter('gameId', $gameId)
             ->getQuery()
             ->getResult();
