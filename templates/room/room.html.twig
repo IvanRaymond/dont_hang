@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Game{% endblock %}
+
+{% block body %}
+    <style>
+        ul {
+            list-style: none;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+        }
+
+        .players, .chat {
+            flex-basis: 66.33%;
+        }
+
+        .player-name {
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .game {
+            text-align: center;
+        }
+
+        #timer {
+            font-size: 30px;
+        }
+    </style>
+
+    <div class="container-flex">
+        <div class="container-item players">
+            <ul>
+                {# {% for joueur in joueurs %} #}
+                <li>
+        <span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"/></svg>
+        </span>
+                    {# <img src="{{ joueur.avatar }}" alt="Avatar de {{ joueur.nom }}" width="50" height="50"> #}
+
+                    <span class="player-name">Player 1</span>
+                    {# <span class="player-name">{{ joueur.nom }}</span> #}
+
+                    <a href="#" title="X"></a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 384 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+                </li>
+                {# {% endfor %} #}
+            </ul>
+        </div>
+        <div class="container-item game">
+            <div id="timer">
+                5:00
+                {# {{ timer }} #}
+            </div>
+            <div class="pendu">
+                <img src="{{ asset('assets/hang/hang.png') }}" alt="PT icon">
+                {# <img src="{{ hang }}" alt="hang icon"> #}
+
+            </div>
+
+            <div class="word">
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+
+                <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
+                <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+                <img src="{{ asset('assets/letters/C.png')}}" alt="letter C">
+                <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+
+
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+
+                <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
+                <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+                <img src="{{ asset('assets/letters/C.png')}}" alt="letter C">
+                <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+
+                <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
+                <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+                <img src="{{ asset('assets/letters/C.png')}}" alt="letter C">
+                <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+                <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+
+                {# {% for letter in letters %} #}
+                {# <img src="{{ asset('assets/letters/' ~ letter.letter ~ '.png') }}" alt="letter {{ letter.name }}"> #}
+                {# {% endfor %} #}
+            </div>
+        </div>
+        <div class="container-item chat">
+            <h2>Chat</h2>
+
+            {# Create a Chat controller for that #}
+            <div class="chat-messages">
+                <div class="message">
+                    <span class="username">The king : </span>
+                    <span class="text">you need to create a chat controller</span>
+                </div>
+                {# {% for message in messages %}
+        <div class="message">
+          <span class="date">{{ message.date }}</span>
+          <span class="username">{{ message.username }}: </span>
+          <span class="text">{{ message.text }}</span>
+        </div>
+      {% endfor %} #}
+            </div>
+
+            {# {{ form_start(form) }}
+      {{ form_row(form.content, {'attr': {'class': 'form-control'}}) }}
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+    {{ form_end(form) }} #}
+        </div>
+
+
+    </div>
+{% endblock %}
