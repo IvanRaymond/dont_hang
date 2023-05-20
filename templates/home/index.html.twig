@@ -43,38 +43,29 @@ td > div.join:hover {
 </style>
 
 <div class="container-flex">
-
   <div class="container-item">
     <h2>{{ 'home.table.game.title'|trans|raw }}</h2>
-
     <div class="current-parties">
       <table class="border lined thick">
         <thead>
           <tr>
-            <th></th>
             <th>{{ 'home.table.game.name'|trans|raw }}</th>
             <th>{{ 'home.table.game.player_count'|trans|raw }}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {# {% for game in games %} #}
+           {% for room in rooms %}
           <tr>
-            <td>img</td>
-            {# <td><img src="{{ game.icon }}" alt="{{ game.name }}"></td> #}
-            <td class="bottom-bar">Partida 1</td>
-            {# <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ game.name }}</td> #}
-            <td class="bottom-bar">2/5</td>
-            {# <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ game.numberOfPlayers }}</td> #}
+            <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ room.name }}</td>
+            <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ room.roomParticipants.count }}/{{ room.capacity }}</td>
             <td>
               <div class="join border lined thick bottom-bar" onclick="goToLink(event)">
-              {# <td class="join border lined thick" onclick="goToLink(event)"> #}
-                <a class="join-link" href="">{{ 'home.table.game.join'|trans|raw }}</a>
+                <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
               </div>
-              {# <a class="join-link" href="{{ game.joinUrl }}">Rejoindre</a> #}
             </td>
           </tr>
-          {# {% endfor %} #}
+           {% endfor %}
         </tbody>
       </table>
     </div>

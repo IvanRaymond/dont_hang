@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RoomRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
@@ -35,12 +37,20 @@ class Room
     #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: RoomParticipant::class)]
+    private Collection $roomParticipants;
+
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Game::class)]
+    private Collection $games;
+
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->roomParticipants = new ArrayCollection();
+        $this->games = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,5 +139,63 @@ class Room
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->created_at;
+    }
+
+    /**
+     * @return Collection<int, RoomParticipant>
+     */
+    public function getRoomParticipants(): Collection
+    {
+        return $this->roomParticipants;
+    }
+
+    public function addRoomParticipant(RoomParticipant $roomParticipant): self
+    {
+        if (!$this->roomParticipants->contains($roomParticipant)) {
+            $this->roomParticipants->add($roomParticipant);
+            $roomParticipant->setRoom($this);
+        }
+        return $this;
+    }
+
+    public function removeRoomParticipant(RoomParticipant $roomParticipant): self
+    {
+        if($this->roomParticipants->removeElement($roomParticipant)) {
+            if ($roomParticipant->getRoom() === $this) {
+                $roomParticipant->setRoom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGames(): Collection
+    {
+        return $this->games;
+    }
+
+    public function addGame(Game $game): self
+    {
+        if (!$this->games->contains($game)) {
+            $this->games->add($game);
+            $game->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGame(Game $game): self
+    {
+        if ($this->games->removeElement($game)) {
+            // set the owning side to null (unless already changed)
+            if ($game->getRoom() === $this) {
+                $game->setRoom(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Game;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +40,30 @@ class GameRepository extends ServiceEntityRepository
         }
     }
 
-   /**
-    * @return Game[] Returns an array of Game objects
-    */
-   public function findByExampleField($value): array
-   {
-       return $this->createQueryBuilder('g')
-           ->andWhere('g.exampleField = :val')
-           ->setParameter('val', $value)
-           ->orderBy('g.id', 'ASC')
-           ->setMaxResults(10)
-           ->getQuery()
-           ->getResult()
-       ;
-   }
+    public function findOneByRoomAndGame(int $roomId, int $gameId)
+    {
+        try {
+            return $this->createQueryBuilder('g')
+                ->andWhere('g.room = :roomId')
+                ->andWhere('g.id = :gameId')
+                ->setParameter('roomId', $roomId)
+                ->setParameter('gameId', $gameId)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
+    }
 
-   public function findOneBySomeField($value): ?Game
-   {
-       return $this->createQueryBuilder('g')
-           ->andWhere('g.exampleField = :val')
-           ->setParameter('val', $value)
-           ->getQuery()
-           ->getOneOrNullResult()
-       ;
-   }
+    public function findLatestByRoom(int $roomId, int $limit = 1)
+    {
+        return $this->createQueryBuilder('g')
+            ->andWhere('g.room = :roomId')
+            ->setParameter('roomId', $roomId)
+            ->orderBy('g.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

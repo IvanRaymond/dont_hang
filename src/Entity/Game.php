@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
@@ -16,7 +15,7 @@ class Game
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Room::class, inversedBy: 'games')]
+    #[ORM\ManyToOne(inversedBy: 'games')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Room $room = null;
 
@@ -35,16 +34,24 @@ class Game
     #[ORM\Column]
     private ?bool $is_won = false;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'games')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'games')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $winner_id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $created_at;
+
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: Proposal::class)]
+    private Collection $proposals;
+
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: GameParticipant::class)]
+    private Collection $gameParticipants;
 
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->proposals = new ArrayCollection();
+        $this->gameParticipants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -88,12 +95,12 @@ class Game
         return $this;
     }
 
-    public function getFinishedAt(): int
+    public function getFinishedIn(): int
     {
         return $this->finished_in;
     }
 
-    public function setFinishedAt(int $finished_in): self
+    public function setFinishedIn(int $finished_in): self
     {
         $this->finished_in = $finished_in;
 
@@ -139,5 +146,65 @@ class Game
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
+    }
+
+    /**
+     * @return Collection<int, Proposal>
+     */
+    public function getProposals(): Collection
+    {
+        return $this->proposals;
+    }
+
+    public function addProposal(Proposal $proposal): self
+    {
+        if (!$this->proposals->contains($proposal)) {
+            $this->proposals->add($proposal);
+            $proposal->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProposal(Proposal $proposal): self
+    {
+        if ($this->proposals->removeElement($proposal)) {
+            // set the owning side to null (unless already changed)
+            if ($proposal->getGame() === $this) {
+                $proposal->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GameParticipant>
+     */
+    public function getGameParticipants(): Collection
+    {
+        return $this->proposals;
+    }
+
+    public function addGameParticipant(GameParticipant $gameParticipant): self
+    {
+        if (!$this->gameParticipants->contains($gameParticipant)) {
+            $this->gameParticipants->add($gameParticipant);
+            $gameParticipant->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameParticipant(GameParticipant $gameParticipant): self
+    {
+        if ($this->gameParticipants->removeElement($gameParticipant)) {
+            // set the owning side to null (unless already changed)
+            if ($gameParticipant->getGame() === $this) {
+                $gameParticipant->setGame(null);
+            }
+        }
+
+        return $this;
     }
 }

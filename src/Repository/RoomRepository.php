@@ -40,16 +40,16 @@ class RoomRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     public function findOneById(int $id): ?Room
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        try {
+            return $this->createQueryBuilder('r')
+                ->andWhere('r.id = :id')
+                ->setParameter('id', $id)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 }

@@ -13,7 +13,7 @@ class Ranking
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
@@ -24,12 +24,7 @@ class Ranking
     private ?int $games_lost = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-    
-    public function __construct()
-    {
-        $this->created_at = new DateTimeImmutable();
-    }
+    private ?\DateTimeImmutable $created_at;
 
     public function __construct()
     {
