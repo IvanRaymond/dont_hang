@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\GameParticipant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -36,6 +37,21 @@ class GameParticipantRepository extends ServiceEntityRepository
 
         if ($flush) {
             $this->getEntityManager()->flush();
+        }
+    }
+
+    public function findOneByGameAndUser(int $gameId, int $userId)
+    {
+        try {
+            return $this->createQueryBuilder('gp')
+                ->andWhere('gp.game = :gameId')
+                ->andWhere('gp.user = :userId')
+                ->setParameter('gameId', $gameId)
+                ->setParameter('userId', $userId)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
         }
     }
 }

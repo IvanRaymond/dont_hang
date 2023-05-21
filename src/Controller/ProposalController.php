@@ -1,86 +1,135 @@
 <?php
 
-namespace App\Repository;
+namespace App\Controller;
 
+use App\Entity\Game;
+use App\Entity\GameParticipant;
 use App\Entity\Proposal;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Room;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @extends ServiceEntityRepository<Proposal>
- *
- * @method Proposal|null find($id, $lockMode = null, $lockVersion = null)
- * @method Proposal|null findOneBy(array $criteria, array $orderBy = null)
- * @method Proposal[]    findAll()
- * @method Proposal[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-class ProposalRepository extends ServiceEntityRepository
+class ProposalController extends AbstractController
 {
-    public function __construct(ManagerRegistry $registry)
+    #[Route('/room/{roomId}/game/proposal', name: 'app_proposal_make')]
+    public function create(int $roomId, Request $request, EntityManagerInterface $entityManager): Response
     {
-        parent::__construct($registry, Proposal::class);
-    }
-
-    public function save(Proposal $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        //Check if user is logged in
+        if(!$this->getUser()){
+            return new Response('Unauthorized', 401);
         }
-    }
-
-    public function remove(Proposal $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
+        $room = $entityManager->getRepository(Room::class)->find($roomId);
+        if(!$room){
+            return new Response('Room not found', 404);
         }
-    }
-
-    public function findByGame(int $gameId): array
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.game = :gameId')
-            ->setParameter('gameId', $gameId)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByUser(int $userId): array
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.user = :userId')
-            ->setParameter('userId', $userId)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByUserAndGame(int $userId, int $gameId)
-    {
-        try {
-            return $this->createQueryBuilder('p')
-                ->andWhere('p.user = :userId')
-                ->andWhere('p.game = :gameId')
-                ->setParameter('userId', $userId)
-                ->setParameter('gameId', $gameId)
-                ->getQuery()
-                ->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
-            return null;
+        if($room->getOwner() === $user){
+            return new Response('Game master cannot participate in game', 400);
         }
+        $game = $entityManager->getRepository(Game::class)->findLatestByRoom($roomId);
+        if(!$game){
+            return new Response('Game not found', 404);
+        }
+        $gameParticipant = $entityManager->getRepository(GameParticipant::class)->findOneByGameAndUser($game->getId(), $user->getId());
+        if(!$gameParticipant){
+            return new Response('User not found in game', 404);
+        }
+        $proposition = $request->query->get('proposition');
+        if(strlen($proposition) > 0) {
+            $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
+            $proposal = new Proposal();
+            $proposal->setGame($game);
+            $proposal->setUser($user);
+            $proposal->setContent($proposition);
+            $proposal->setCorrect($points > 0);
+            $proposal->setPoints($points);
+            $entityManager->persist($proposal);
+            $entityManager->flush();
+            $game->setWordStatus($this->updateWordStatus($game->getWord(), $game->getWordStatus(), $proposition));
+            $entityManager->persist($game);
+            $entityManager->flush();
+            if($game->getWord() === $game->getWordStatus()) {
+                $game->setWon(true);
+                $game->setWinner($user);
+                $game->setFinishedAt(new \DateTime());
+                $entityManager->persist($game);
+                $entityManager->flush();
+                // TODO: Push to all subscribers that the game has been won
+
+            }
+            // Return points won and if game is won
+            return new Response(json_encode([
+                'points' => $points,
+                'isWon' => $game->isWon()
+            ]), 200, [
+                'Content-Type' => 'application/json'
+            ]);
+        }
+        // proposition is empty
+        return new Response('Bad request', 400);
     }
 
-    public function findCorrectByGame(int $gameId): array
+   /**
+    * Update the word status
+    * @param string $word The word to complete
+    * @param string $word_status The current status of the word
+    * @param string $proposition The proposition to check
+    * @return string
+    */
+    private function updateWordStatus(string $word, string $word_status, string $proposition): string
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.game = :gameId')
-            ->andWhere('p.is_correct = true')
-            ->setParameter('gameId', $gameId)
-            ->getQuery()
-            ->getResult();
+        if ($proposition === $word) {
+            $word_status = $proposition;
+        } elseif (strlen($proposition) === 1) {
+            $propositionLetter = $proposition[0];
+            $word_statusArr = str_split($word_status);
+
+            foreach ($word_statusArr as $index => $letter) {
+                if ($letter === '_' && $word[$index] === $propositionLetter) {
+                    $word_statusArr[$index] = $propositionLetter;
+                }
+            }
+
+            $word_status = implode('', $word_statusArr);
+        }
+        return $word_status;
     }
 
+    /**
+     * Get the points won
+     * @param string $word
+     * @param string $word_status
+     * @param string $proposition
+     * @return int
+     */
+    private function getPoints(string $word, string $word_status, string $proposition): int
+    {
+        $wordArr = str_split($word);
+        $wordStatusArr = str_split($word_status);
+        $propositionArr = str_split($proposition);
+
+        $discoveredLetters = [];
+
+        if (count($propositionArr) === 1) {
+            $letter = $propositionArr[0];
+            $index = array_search($letter, $wordStatusArr);
+
+            if ($index !== false && $wordStatusArr[$index] === '_') {
+                $discoveredLetters[] = $letter;
+            }
+        } else {
+            if ($proposition === $word) {
+                foreach ($wordArr as $index => $letter) {
+                    if ($wordStatusArr[$index] === '_') {
+                        $discoveredLetters[] = $letter;
+                    }
+                }
+            }
+        }
+        return count(array_unique($discoveredLetters));
+    }
 }
