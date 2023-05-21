@@ -55,6 +55,7 @@ class ProposalController extends AbstractController
             if($game->getWord() === $game->getWordStatus()) {
                 $game->setWon(true);
                 $game->setWinner($user);
+                $game->setFinishedAt(new \DateTime());
                 $entityManager->persist($game);
                 $entityManager->flush();
                 // TODO: Push to all subscribers that the game has been won

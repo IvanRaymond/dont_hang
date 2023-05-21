@@ -29,7 +29,7 @@ class Game
     private ?int $duration = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $finished_in = null;
+    private ?\DateTime $finished_at = null;
 
     #[ORM\Column]
     private ?bool $active = true;
@@ -110,14 +110,14 @@ class Game
         return $this;
     }
 
-    public function getFinishedIn(): int
+    public function getFinishedAt(): \DateTime
     {
-        return $this->finished_in;
+        return $this->finished_at;
     }
 
-    public function setFinishedIn(int $finished_in): self
+    public function setFinishedAt(\DateTime $finished_at): self
     {
-        $this->finished_in = $finished_in;
+        $this->finished_at = $finished_at;
 
         return $this;
     }

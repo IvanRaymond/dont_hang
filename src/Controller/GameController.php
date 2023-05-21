@@ -80,12 +80,6 @@ class GameController extends AbstractController
             $entityManager->persist($gameParticipant);
             $entityManager->flush();
         }
-        // Async timer task, The timer task will update the game status to inactive when the timer is finished
-        // Doesn't work as expected, the process is not detached from the parent process
-        // The process is killed when the Response is returned
-//        $process = new Process(['php', 'bin/console', 'app:game-timer', $duration, $game->getId()]);
-//        $process->disableOutput();
-//        $process->start();
         // TODO: Push to all subscribers that game has started
 
         sleep($duration);
