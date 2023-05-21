@@ -39,7 +39,7 @@ class ProposalController extends AbstractController
             return new Response('User not found in game', 404);
         }
         $proposition = $request->query->get('proposition');
-        if(strlen($proposition > 0)) {
+        if(strlen($proposition) > 0) {
             $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
             $proposal = new Proposal();
             $proposal->setGame($game);
