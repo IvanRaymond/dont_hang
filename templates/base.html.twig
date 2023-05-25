@@ -19,6 +19,49 @@
         {% endblock %}
     </head>
     <body>
+      <nav class="border lined thick" id="navbar">
+          <div class="navbar-left">
+              <a href="/">
+                  <img src="{{ asset('logo.png') }}" alt="Logo">
+              </a>
+          </div>
+          <div class="navbar-right">
+              {# {% if not is_logged_in %} #}
+                  {# <a class="nav-link border lined thick" href="/login">CONNEXION</a>
+                  <a class="nav-link border lined thick" href="/register">S'ENREGISTRER</a> #}
+              {# {% else %} #}
+                  <div class="user-icon" onclick="openMenu();">
+                    <img src="{{ asset('/assets/users/king.png')}}" alt="User icon" />
+                    {# {% if username.icon is defined %}
+                      <img src="{{ asset('/assets/users/' ~ username.icon) }}" />
+                    {% else %}
+                        <img src="{{ asset('/assets/users/default-icon.png') }}" />
+                    {% endif %} #}
+                  </div>
+
+                  <div class="menu border lined thick">
+                    <ul>
+                      <li><a href="/account">Compte</a></li>
+                      <li><a href="/logout">Déconnexion</a></li>
+                    </ul>
+                  </div>
+
+                  <script>
+                    function openMenu() {
+                      const menu = document.querySelector(".menu");
+                      menu.classList.toggle("active");
+                    }
+                  </script>
+
+              {# {% endif %} #}
+          </div>
+      </nav>
+      <div id="content">
         {% block body %}{% endblock %}
+      </div>
+
+        <footer class="border lined thick" id="bottombar">
+             &copy; {{ "now"|date("Y") }}
+        </footer>
     </body>
 </html>
