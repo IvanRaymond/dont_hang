@@ -15,16 +15,6 @@
   padding-bottom: 2em;
 }
 
-table {
-  width:100%;
-  height: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  text-align: left;
-}
-
 .join {
   text-align: center;
 }
@@ -33,9 +23,37 @@ th {
   color: black;
 }
 
-td > div.join:hover {
+.join:hover {
   background-color: #eee;
   cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+li {
+  display: flex;
+  padding: 0.5em;
+}
+
+li>span{
+  flex: 1;
+}
+
+.lock-room {
+  flex: 0.3;
+}
+
+.icon-profile, .score-player {
+  flex: 0.5;
+}
+
+.game-won-lost {
+  flex: 2;
 }
 
 </style>
@@ -44,73 +62,54 @@ td > div.join:hover {
   <div class="container-item">
     <h2>{{ 'home.table.game.title'|trans|raw }}</h2>
     <div class="current-parties">
-      <table class="border lined thick">
-        <thead>
-          <tr>
-            <th></th>
-            <th>{{ 'home.table.game.name'|trans|raw }}</th>
-            <th>{{ 'home.table.game.player_count'|trans|raw }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-           {% for room in rooms %}
-             {% set activeCount = 0 %}
-             {% for participant in room.roomParticipants %}
-               {% if participant.isActive() %}
-                 {% set activeCount = activeCount + 1 %}
-               {% endif %}
-             {% endfor %}
-          <tr>
-            <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ room.name }}</td>
-            <td class="{{ loop.last ? '' : 'bottom-bar' }}">{{ activeCount }}/{{ room.capacity }}</td>
-            <td>
-              <div class="join border lined thick bottom-bar" onclick="goToLink(event)">
-                <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
-              </div>
-            </td>
-          </tr>
-           {% endfor %}
-        </tbody>
-      </table>
+      <ul class="border lined thick">
+        <li class="partie-item">
+          <span class="lock-room"></span>
+          <span class="name-room">{{ 'home.table.game.name'|trans|raw }}</span>
+          <span class="player-joined">{{ 'home.table.game.player_joined'|trans|raw }}</span>
+          <span class="join"></span>
+        </li>
+        {% for room in rooms %}
+          {% set activeCount = 0 %}
+          {% for participant in room.roomParticipants %}
+            {% if participant.isActive() %}
+              {% set activeCount = activeCount + 1 %}
+            {% endif %}
+          {% endfor %}
+          <li class="partie-item {{ loop.last ? '' : 'bottom-bar' }}">
+            <span class="lock-room"></span>
+            <span class="name-room">{{ room.name }}</span>
+            <span class="player-joined">{{ activeCount }}/{{ room.capacity }}</span>
+            
+            <span class="join border lined thick bottom-bar" onclick="goToLink(event)">
+              <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    
     </div>
   </div>
   <div class="container-item">
     <h2>{{ 'home.table.ranking.title'|trans|raw }}</h2>
 
     <div class="current-ranking">
-      <table class="border lined thick">
-        <thead>
-          <tr>
-            <th></th>
-            <th>{{ 'home.table.ranking.name'|trans|raw }}</th>
-            <th>{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</th>
-            <th>{{ 'home.table.ranking.score'|trans|raw }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {# {% for rank in ranks %} #}
-          <tr>
-            <td>
-              <span>icon profile</span>
-              {# <span>{{ rank.profile }}</span> #}
-            </td>
-            <td>
-              <span>The boss</span>
-              {# <span>{{ rank.name }}</span> #}
-            </td>
-            <td>
-              <span>3/5</span>
-              {# <span>{{ rank.win }}/{{ rank.lose }}</span> #}
-            </td>
-            <td>
-              <span>59</span>
-              {# <span>{{ rank.points }}</span> #}
-            </td>
-          </tr>
+      <ul class="ranking-tabs border lined thick">
+        <li class="ranking-tab-item">
+          <span class="icon-profile"></span>
+          <span class="name-player">{{ 'home.table.ranking.name'|trans|raw }}</span>
+          <span class="game-won-lost">{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</span>
+          <span class="score-player">{{ 'home.table.ranking.score'|trans|raw }}</span>
+        </li>
+        {# {% for rank in ranks %} #}
+          {# <li class="ranking-tab-item">
+            <span class="icon-profile">{{ rank.profile }}</span>
+            <span class="name-player">{{ rank.name }}</span>
+            <span class="game-won-lost">{{ rank.win }}/{{ rank.lose }}</span>
+            <span class="score-player">{{ rank.points }}</span>
+          </li> #}
           {# {% endfor %} #}
-        </tbody>
-      </table>
+      </ul>
     </div>
   </div> 
 </div>
