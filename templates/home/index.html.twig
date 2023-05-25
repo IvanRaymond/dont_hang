@@ -10,12 +10,14 @@
   margin-right: 5em;
 }
 
-.container-item {
-  margin: 2em;
+.current-parties, .current-ranking {
+  height: 100%;
+  padding-bottom: 2em;
 }
 
 table {
   width:100%;
+  height: 100%;
   border-collapse: collapse;
 }
 
@@ -36,10 +38,6 @@ td > div.join:hover {
   cursor: pointer;
 }
 
-.bottom-bar {
-  border-bottom:solid 3px #41403E;
-}
-
 </style>
 
 <div class="container-flex">
@@ -49,6 +47,7 @@ td > div.join:hover {
       <table class="border lined thick">
         <thead>
           <tr>
+            <th></th>
             <th>{{ 'home.table.game.name'|trans|raw }}</th>
             <th>{{ 'home.table.game.player_count'|trans|raw }}</th>
             <th></th>
@@ -79,38 +78,40 @@ td > div.join:hover {
   <div class="container-item">
     <h2>{{ 'home.table.ranking.title'|trans|raw }}</h2>
 
-    <table class="border lined thick">
-      <thead>
-        <tr>
-          <th></th>
-          <th>{{ 'home.table.ranking.name'|trans|raw }}</th>
-          <th>{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</th>
-          <th>{{ 'home.table.ranking.score'|trans|raw }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {# {% for rank in ranks %} #}
-        <tr>
-          <td>
-            <span>icon profile</span>
-            {# <span>{{ rank.profile }}</span> #}
-          </td>
-          <td>
-            <span>The boss</span>
-            {# <span>{{ rank.name }}</span> #}
-          </td>
-          <td>
-            <span>3/5</span>
-            {# <span>{{ rank.win }}/{{ rank.lose }}</span> #}
-          </td>
-          <td>
-            <span>59</span>
-            {# <span>{{ rank.points }}</span> #}
-          </td>
-        </tr>
-        {# {% endfor %} #}
-      </tbody>
-    </table>
+    <div class="current-ranking">
+      <table class="border lined thick">
+        <thead>
+          <tr>
+            <th></th>
+            <th>{{ 'home.table.ranking.name'|trans|raw }}</th>
+            <th>{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</th>
+            <th>{{ 'home.table.ranking.score'|trans|raw }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {# {% for rank in ranks %} #}
+          <tr>
+            <td>
+              <span>icon profile</span>
+              {# <span>{{ rank.profile }}</span> #}
+            </td>
+            <td>
+              <span>The boss</span>
+              {# <span>{{ rank.name }}</span> #}
+            </td>
+            <td>
+              <span>3/5</span>
+              {# <span>{{ rank.win }}/{{ rank.lose }}</span> #}
+            </td>
+            <td>
+              <span>59</span>
+              {# <span>{{ rank.points }}</span> #}
+            </td>
+          </tr>
+          {# {% endfor %} #}
+        </tbody>
+      </table>
+    </div>
   </div> 
 </div>
 {% endblock %}
@@ -124,4 +125,3 @@ td > div.join:hover {
     }
   </script>
 {% endblock %}
-
