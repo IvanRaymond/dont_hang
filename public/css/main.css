@@ -82,7 +82,7 @@ body {
 
 /* menu logged */
 
-.navbar-right {
+.navbar-right.logged {
   position: fixed;
   top: 20px;
   right: 30px;
@@ -124,7 +124,7 @@ body {
   width: 100%
 }
 
-.navbar-right .menu ul li:hover a {
+.navbar-right .menu ul li:hover {
   background-color: #eee;
 }
 
