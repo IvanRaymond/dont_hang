@@ -11,6 +11,7 @@ home:
       title: Parties en cours
       name: Nom
       player_count: Nombre de joueurs
+      player_joined: Joueur rejoint
       join: Rejoindre
     ranking:
       title: Classement

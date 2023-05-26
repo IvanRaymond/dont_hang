@@ -4,6 +4,10 @@
 
 {% block body %}
 <style>
+	.user-information {
+		margin-top: 1em;
+	}
+
 	.container-item-avatar {
 			flex-basis: 33.33%;
 			flex-grow: 0;
@@ -18,18 +22,17 @@
 		margin:0 0.5rem;
 	}
 
-	ul {
-		padding: 0;
-		list-style-type: none;
+	.history-games ul {
+			padding: 0;
+			list-style-type: none;
 	}
 
-
 	.lose-background {
-		background-color: #952228;
+		background-color: #ff3f49;
 	}
 
 	.win-background {
-		background-color: #313B80;
+		background-color: #9bdeff;
 	}
 
 	.game-content {
@@ -70,7 +73,7 @@
             <div class="container-item-information-player">
                 <p> Joueur 1 </p>
                 <p> Adresse mail : test@gmail.com</p>
-                <a href=""> Modifier vos information</a>
+                <a href=""> Modifier vos informations</a>
             </div>
         </div>
         <div class="user-stats">
@@ -121,16 +124,20 @@
     <div class="container-item">
         <h2>Historique des parties</h2>
         <div class="history-games">
-            <ul>
+            <ul class="border lined thick">
     					{# {% for partie in parties %} #}
-						      <li>
-										{# <div class="{{ partie.resultat == 'perdant' ? 'lose-background' : 'win-background' }}"> #}
-											<div class="content">
+									<li class="bottom-bar">
+						      {# <li class="{{ loop.last ? '' : 'bottom-bar' }}"> #}
+										{# <div class="content {{ partie.resultat == 'perdant' ? 'lose-background' : 'win-background' }}"> #}
+											<div class="content win-background">
 												<div class="game-content">
 													<div class="game">
 														<div class="timestamp">
-															25-12-2000
+															<span>25-12-2000</span>
 															{# <span>{{ partie.date }}</span> #}
+															<span>|</span>
+															<span class="length">4:10</span>
+															{# <span class="length">{{ partie.length }}</span> #}
 														</div>
 														<div class="bar">
 														</div>
@@ -138,11 +145,37 @@
 															Victoire
 															{# <span>{{ partie.resultat }}</span> #}
 														</div>
-														<div class="length">
-														 	4:10
-															{# <span>{{ partie.length }}</span> #}
-														</span>
 													</div>
+													<div class="word">
+														Le mot était : poufsouffle
+														{# Le mot était : <span>{{ partie.mot }}</span> #}
+													</div>
+													<div class="points">
+														95 pts
+														{# <span>{{ item.nombre_de_points }}</span> pts #}
+													</div>
+												</div>
+											</div>
+										{# </div> #}
+									</li>
+									<li>
+										{# <div class="content {{ partie.resultat == 'perdant' ? 'lose-background' : 'win-background' }}"> #}
+											<div class="content win-background">
+												<div class="game-content">
+													<div class="game">
+														<div class="timestamp">
+															<span>25-12-2000</span>
+															{# <span>{{ partie.date }}</span> #}
+															<span>|</span>
+															<span class="length">4:10</span> 
+															{# <span class="length">{{ partie.length }}</span> #}
+														</div>
+														<div class="bar">
+														</div>
+														<div class="result">
+															Victoire
+															{# <span>{{ partie.resultat }}</span> #}
+														</div>
 												</div>
 												<div class="word">
 													Le mot était : poufsouffle

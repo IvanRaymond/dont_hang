@@ -11,6 +11,7 @@ home:
       title: On going games
       name: Name
       player_count: Player count
+      player_joined: Player joined
       join: Join
     ranking:
       title: Ranking
