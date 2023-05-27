@@ -53,6 +53,7 @@ class RoomController extends BaseController
     public function getRoom(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $isLogged = $this->isLoggedIn();
+        $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
@@ -84,6 +85,7 @@ class RoomController extends BaseController
 
             return $this->render('room/room.html.twig', [
                 'is_logged_in' => $isLogged,
+                'avatar' => $avatar,
                 'room' => $room,
             ]);
         } else {
