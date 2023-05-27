@@ -41,6 +41,7 @@ class RoomController extends BaseController
 
             return $this->render('room/create.html.twig', [
                 'is_logged_in' => $isLogged,
+                'avatar' => $this->getUser()->getPicture(),
                 'roomForm' => $form->createView(),
             ]);
         } else {
