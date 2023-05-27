@@ -98,6 +98,34 @@
       transition: all 0.3s ease;
     }
   </style>
+
+{% for flashMessage in app.flashes('success') %}
+	<div class="snackbar active">
+		<div class="snackbar-content">
+			{{ flashMessage }}
+		</div>
+		<div class="snackbar-actions">
+			<div class="snackbar-action-close">Close</div>
+		</div>
+	</div>
+
+	<script>
+		const closeButton = document.querySelector('.snackbar-action-close');
+
+		function hideSnackbar() {
+			const snackbar = document.querySelector('.snackbar');
+			snackbar.style.opacity = '0';
+			setTimeout(function() {
+				snackbar.classList.remove('active');
+			}, 1000);
+		}
+		closeButton.addEventListener('click', hideSnackbar);
+
+		setTimeout(hideSnackbar, 15000);
+	</script>
+{% endfor %}
+
+
   {% if errors|length > 0 %}
 	  <div class="snackbar active">
       <div class="snackbar-content">
@@ -187,7 +215,10 @@
           photoInput.addEventListener('change', function() {
             const photo = photoInput.files[0];
             const inputPicture = document.getElementById('user_photo_picture');
-            inputPicture.value = photo.name;
+
+            const filesList = new DataTransfer();
+            filesList.items.add(photo);
+            inputPicture.files = filesList.files;
             document.getElementById('submit-picture').click();
           });
 

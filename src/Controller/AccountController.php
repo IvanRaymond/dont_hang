@@ -53,19 +53,26 @@ class AccountController extends BaseController
         if ($photoForm->isSubmitted() && $photoForm->isValid()) {
             $picture = $photoForm->get('picture')->getData();
 
-            // redirect if it is not the right format
-            if (pathinfo($picture, PATHINFO_EXTENSION) != 'jpeg') {
+            if ($picture->getClientOriginalExtension() != "jpeg") {
                 // display a snackbar error
                 $this->addFlash('success', 'Mauvaise extension du fichier.');
                 return $this->redirectToRoute('app_account_edit');
             }
+
+            // move the file to the right folder
+            $pictureUrl = uniqid().'.jpeg';
+            $picture->move(
+                "assets/users",
+                $pictureUrl
+            );
+
+            $this->getUser()->setPicture($pictureUrl);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
             // display a snackbar success
             $this->addFlash('success', 'Photo de profil modifiée.');
-
             return $this->redirectToRoute('app_account');
         }
 
