@@ -84,7 +84,7 @@ body {
 
 .navbar-right.logged {
   position: fixed;
-  top: 20px;
+  top: 15px;
   right: 30px;
 }
 
@@ -95,7 +95,7 @@ body {
 
 .navbar-right .menu {
   position: absolute;
-  top: 44px;
+  top: 49px;
   right: 15px;
   width: 150px;
   transition: 0.5s;
@@ -104,7 +104,7 @@ body {
 }
 
 .navbar-right .menu.active {
-  top: 44px;
+  top: 49px;
   visibility: visible;
   opacity: 1;
 }
@@ -158,3 +158,61 @@ body {
   border:dotted 2px #41403E;
 }
 /* end code of stackoverflow */
+
+/* snackbar style */
+
+.snackbar {
+  opacity: 0;
+  display: none;
+  width: 100%;
+  max-width: 30%;
+  border-radius: 5px 5px 5px 5px;
+}
+
+.snackbar.active {
+  opacity: 1;
+  transition: opacity 0.5s;
+  display: flex;
+  position: fixed;
+  left: 50%;
+  top: 5%;
+  transform: translateX(-50%);
+  background-color: rgb(54, 54, 54);
+  padding: 10px;
+  color: white;
+}
+
+.snackbar .snackbar-content {
+  flex: 1;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.snackbar .snackbar-actions {
+  flex: 0.25;
+  display: flex;
+  align-items: center;
+  border-radius: 5px 5px 5px 5px;
+}
+
+.snackbar-action-close {
+  width: 100%;
+  text-align: center;
+  color: red;
+  cursor: pointer;
+}
+
+.snackbar .snackbar-actions:hover {
+  background-color: rgb(57, 17, 17);
+}
+
+/* snackbar style end */
+
+.avatar-icon {
+  /* display: inline-block; */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}

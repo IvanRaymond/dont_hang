@@ -32,10 +32,10 @@
           {% else %}
             <div class="navbar-right logged">
               <div class="user-icon" onclick="openMenu();">
-                {% if username.icon is defined %}
-                  <img src="{{ asset('/assets/users/' ~ username.icon) }}" alt="User icon" />
+                {% if avatar is defined %}
+                  <img class="avatar-icon" src="{{ asset('/assets/users/' ~ avatar) }}" alt="User icon" />
                 {% else %}
-                    <img src="{{ asset('/assets/users/default-icon.png') }}" alt="User icon"/>
+                    <img class="avatar-icon" src="{{ asset('/assets/users/default-icon.png') }}" alt="User icon"/>
                 {% endif %}
               </div>
 
