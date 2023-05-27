@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit{% endblock %}
+
+{% block body %}
+  <style>
+    #modify-photo-link {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .user-form {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-form h1 {
+      text-align: left;
+    }
+
+    .user-form form {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: column;
+      width: 50%;
+    }
+
+    .user-form div:first-child {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .email-row, .password-row {
+      border: 0;
+      height: 30px;
+      padding-left: 10px;
+      font-family: kg_indie_flowerregular;
+      border-radius: 0px;
+    }
+
+    .valid-edit-row {
+      text-align: center;
+    }
+
+    .valid-edit-row:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-edit-row:hover > button {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-edit-row button {
+      border: 0;
+      background-color: white;
+      font-family: kg_indie_flowerregular;
+    }
+
+    .avatar-container {
+      display: flex;
+      height: 200px;
+      width: 200px;
+    }
+
+    .avatar {
+      width: 200px;
+    }
+
+    .picture-form form {
+      margin: 1em;
+    }
+
+    .container-item {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-row div:first-child {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-row div:nth-child(1) {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+  </style>
+  <div class="container-flex">
+    <div class="picture-form container-item">
+      <div class="avatar-container border lined thick">
+        {% if avatar is defined %}
+          <img class="avatar " src="{{ asset('/assets/users/' ~ avatar) }}" alt="User icon" />
+        {% else %}
+            <img class="avatar" src="{{ asset('/assets/users/default-icon.png') }}" alt="User icon"/>
+        {% endif %}
+      </div>
+        {{ form_start(photoForm) }}
+        
+        <a id="modify-photo-link">Modifier votre photo de profil</a>
+
+        {{ form_widget(photoForm.picture, { 'attr': {'class': 'hidden'}}) }}
+        
+        <button id="submit-picture" type="submit" class="hidden">Mettre à jour la photo</button>
+        {{ form_end(photoForm) }}
+     </div>
+     <div class="user-form container-item">
+
+      <h1>{{ name }}</h1>
+
+      {{ form_start(editForm) }}
+      <div class="form-row">
+        {{ form_row(editForm.email, {
+          attr: { 
+            'class': 'email-row border lined thick'
+          }}
+        )}}
+      </div>
+      <div class="form-row">
+        {{ form_row(editForm.password, {
+          attr: {
+            'class': 'password-row border lined thick'
+          }}
+        )}}
+      </div>
+
+      <div class="valid-edit-row border lined thick">
+        <button type="submit">Modifier</button>
+      </div>
+      {{ form_end(editForm) }}
+
+
+      <script>
+        document.getElementById('modify-photo-link').addEventListener('click', function(e) {
+          e.preventDefault();
+
+          const photoInput = document.createElement('input');
+          photoInput.type = 'file';
+
+          photoInput.addEventListener('change', function() {
+            const photo = photoInput.files[0];
+            const inputPicture = document.getElementById('user_photo_picture');
+            inputPicture.value = photo.name;
+            document.getElementById('submit-picture').click();
+          });
+
+          photoInput.click();
+        });
+      </script>
+    </div>
+  </div>
+{% endblock %}
