@@ -27,6 +27,9 @@ class RegistrationController extends BaseController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+
+        $errors = $form->getErrors(true);
+
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(
@@ -49,6 +52,7 @@ class RegistrationController extends BaseController
 
         return $this->render('registration/register.html.twig', [
             'is_logged_in' => $isLogged,
+            'errors' => $errors,
             'registrationForm' => $form->createView(),
         ]);
     }

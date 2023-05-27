@@ -34,6 +34,10 @@
       transition: all 0.3s ease;
     }
 
+    .form-row ul {
+      display: none;
+    }
+
     .username-row, .email-row, .password-row {
       border: 0;
       height: 30px;
@@ -71,6 +75,32 @@
     }
 
   </style>
+
+  {% if errors|length > 0 %}
+	  <div class="snackbar active">
+      <div class="snackbar-content">
+        {{ errors }}
+      </div>
+      <div class="snackbar-actions">
+        <div class="snackbar-action-close">Close</div>
+      </div>
+    </div>
+
+    <script>
+      const closeButton = document.querySelector('.snackbar-action-close');
+
+      function hideSnackbar() {
+        const snackbar = document.querySelector('.snackbar');
+        snackbar.style.opacity = '0';
+        setTimeout(function() {
+          snackbar.classList.remove('active');
+        }, 1000);
+      }
+      closeButton.addEventListener('click', hideSnackbar);
+
+      setTimeout(hideSnackbar, 15000);
+    </script>
+  {% endif %}
 
   <div class="container-flex">
     <div class="container-item">

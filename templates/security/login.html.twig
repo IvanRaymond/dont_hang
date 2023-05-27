@@ -63,11 +63,14 @@
 
                 function hideSnackbar() {
                   const snackbar = document.querySelector('.snackbar');
-                  snackbar.classList.remove('active');
+                  snackbar.style.opacity = '0';
+                  setTimeout(function() {
+                    snackbar.classList.remove('active');
+                  }, 1000);
                 }
                 closeButton.addEventListener('click', hideSnackbar);
 
-                setTimeout(hideSnackbar, 10000);
+                setTimeout(hideSnackbar, 15000);
               </script>
           {% endif %}
 
