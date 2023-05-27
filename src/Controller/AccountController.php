@@ -55,7 +55,7 @@ class AccountController extends BaseController
 
             if ($picture->getClientOriginalExtension() != "jpeg") {
                 // display a snackbar error
-                $this->addFlash('success', 'Mauvaise extension du fichier.');
+                $this->addFlash('success', 'Mauvaise extension du fichier. (jpeg)');
                 return $this->redirectToRoute('app_account_edit');
             }
 
