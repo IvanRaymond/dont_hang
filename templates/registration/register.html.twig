@@ -54,6 +54,16 @@
       text-align: center;
     }
 
+    .valid-signup-row:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-signup-row:hover > button {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
     .valid-signup-row button {
       border: 0;
       background-color: white;
@@ -100,8 +110,17 @@
         </div>
 
         <div class="valid-signup-row border lined thick">
-            <button type="submit" class="btn">{{ 'auth.register.label'|trans|raw }}</button>
+            <button type="submit" class="valid-signup-btn">{{ 'auth.register.label'|trans|raw }}</button>
         </div>
+
+        <script>
+          const divValidSignup = document.querySelector('.valid-signup-row');
+          const buttonSubmitSignup = document.querySelector('.valid-signup-btn');
+
+          divValidSignup.addEventListener('click', function() {
+            buttonSubmitSignup.click();
+          });
+        </script>
       {{ form_end(registrationForm) }}
     </div>
   </div>
