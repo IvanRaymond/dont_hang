@@ -86,6 +86,10 @@
       margin-bottom: 5px;
     }
 
+    .form-row ul {
+      display: none;
+    }
+
     .form-row div:nth-child(1) {
       margin-bottom: 15px;
       display: flex;
@@ -94,6 +98,33 @@
       transition: all 0.3s ease;
     }
   </style>
+  {% if errors|length > 0 %}
+	  <div class="snackbar active">
+      <div class="snackbar-content">
+        {{ errors }}
+      </div>
+      <div class="snackbar-actions">
+        <div class="snackbar-action-close">Close</div>
+      </div>
+    </div>
+
+    <script>
+      const closeButton = document.querySelector('.snackbar-action-close');
+
+      function hideSnackbar() {
+        const snackbar = document.querySelector('.snackbar');
+        snackbar.style.opacity = '0';
+        setTimeout(function() {
+          snackbar.classList.remove('active');
+        }, 500);
+      }
+      closeButton.addEventListener('click', hideSnackbar);
+
+      setTimeout(hideSnackbar, 15000);
+    </script>
+  {% endif %}
+
+
   <div class="container-flex">
     <div class="picture-form container-item">
       <div class="avatar-container border lined thick">
@@ -104,7 +135,6 @@
         {% endif %}
       </div>
         {{ form_start(photoForm) }}
-        
         <a id="modify-photo-link">Modifier votre photo de profil</a>
 
         {{ form_widget(photoForm.picture, { 'attr': {'class': 'hidden'}}) }}
@@ -133,8 +163,17 @@
       </div>
 
       <div class="valid-edit-row border lined thick">
-        <button type="submit">Modifier</button>
+        <button class="valid-edit-btn" type="submit">Modifier</button>
       </div>
+
+      <script>
+        const divValidEdit = document.querySelector('.valid-edit-row');
+        const buttonSubmitEdit = document.querySelector('.valid-edit-btn');
+
+        divValidEdit.addEventListener('click', function() {
+          buttonSubmitEdit.click();
+        });
+      </script>
       {{ form_end(editForm) }}
 
 
