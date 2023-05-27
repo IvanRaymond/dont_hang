@@ -15,9 +15,12 @@ class HomeController extends BaseController
     public function index(EntityManagerInterface $entityManager): Response
     {
         $isLogged = $this->isLoggedIn();
+        $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
+
         $rooms = $entityManager->getRepository(Room::class)->findAll();
         return $this->render('home/index.html.twig', [
             'is_logged_in' => $isLogged,
+            'avatar' => $avatar,
             'controller_name' => 'HomeController',
             'rooms' => $rooms,
         ]);
