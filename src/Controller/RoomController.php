@@ -2,21 +2,22 @@
 
 namespace App\Controller;
 
+use App\Controller\BaseController;
 use App\Entity\Room;
 use App\Entity\RoomParticipant;
 use App\Entity\User;
 use App\Form\RoomFormType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RoomController extends AbstractController
+class RoomController extends BaseController
 {
     #[Route('/room/create', name: 'app_room_create')]
     public function createRoom(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $isLogged = $this->isLoggedIn();
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
@@ -39,6 +40,8 @@ class RoomController extends AbstractController
             }
 
             return $this->render('room/create.html.twig', [
+                'is_logged_in' => $isLogged,
+                'avatar' => $this->getUser()->getPicture(),
                 'roomForm' => $form->createView(),
             ]);
         } else {
@@ -49,6 +52,8 @@ class RoomController extends AbstractController
     #[Route('/room/{id}', name: 'app_room')]
     public function getRoom(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
+        $isLogged = $this->isLoggedIn();
+        $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
@@ -63,6 +68,7 @@ class RoomController extends AbstractController
         if ($user) {
             if($room->getOwner() === $user) {
                 return $this->render('room/room.html.twig', [
+                    'is_logged_in' => $isLogged,
                     'room' => $room,
                 ]);
             }
@@ -78,6 +84,8 @@ class RoomController extends AbstractController
             }
 
             return $this->render('room/room.html.twig', [
+                'is_logged_in' => $isLogged,
+                'avatar' => $avatar,
                 'room' => $room,
             ]);
         } else {

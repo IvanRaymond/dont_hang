@@ -34,6 +34,10 @@
       transition: all 0.3s ease;
     }
 
+    .form-row ul {
+      display: none;
+    }
+
     .username-row, .email-row, .password-row {
       border: 0;
       height: 30px;
@@ -54,6 +58,16 @@
       text-align: center;
     }
 
+    .valid-signup-row:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-signup-row:hover > button {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
     .valid-signup-row button {
       border: 0;
       background-color: white;
@@ -61,6 +75,32 @@
     }
 
   </style>
+
+  {% if errors|length > 0 %}
+	  <div class="snackbar active">
+      <div class="snackbar-content">
+        {{ errors }}
+      </div>
+      <div class="snackbar-actions">
+        <div class="snackbar-action-close">Close</div>
+      </div>
+    </div>
+
+    <script>
+      const closeButton = document.querySelector('.snackbar-action-close');
+
+      function hideSnackbar() {
+        const snackbar = document.querySelector('.snackbar');
+        snackbar.style.opacity = '0';
+        setTimeout(function() {
+          snackbar.classList.remove('active');
+        }, 1000);
+      }
+      closeButton.addEventListener('click', hideSnackbar);
+
+      setTimeout(hideSnackbar, 15000);
+    </script>
+  {% endif %}
 
   <div class="container-flex">
     <div class="container-item">
@@ -100,8 +140,17 @@
         </div>
 
         <div class="valid-signup-row border lined thick">
-            <button type="submit" class="btn">{{ 'auth.register.label'|trans|raw }}</button>
+            <button type="submit" class="valid-signup-btn">{{ 'auth.register.label'|trans|raw }}</button>
         </div>
+
+        <script>
+          const divValidSignup = document.querySelector('.valid-signup-row');
+          const buttonSubmitSignup = document.querySelector('.valid-signup-btn');
+
+          divValidSignup.addEventListener('click', function() {
+            buttonSubmitSignup.click();
+          });
+        </script>
       {{ form_end(registrationForm) }}
     </div>
   </div>
