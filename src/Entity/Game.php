@@ -42,6 +42,9 @@ class Game
     private ?User $winner = null;
 
     #[ORM\Column]
+    private ?bool $isClassic = true;
+
+    #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Proposal::class)]
@@ -154,6 +157,18 @@ class Game
     public function setWinner(?User $winner): self
     {
         $this->winner = $winner;
+
+        return $this;
+    }
+
+    public function getIsClassic(): ?bool
+    {
+        return $this->isClassic;
+    }
+
+    public function setIsClassic(bool $isClassic): self
+    {
+        $this->isClassic = $isClassic;
 
         return $this;
     }
