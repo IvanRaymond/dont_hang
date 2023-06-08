@@ -37,10 +37,6 @@ class Game
     #[ORM\Column]
     private ?bool $won = false;
 
-    #[ORM\ManyToOne(inversedBy: 'games')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?User $winner = null;
-
     #[ORM\Column]
     private ?bool $isClassic = true;
 
@@ -53,11 +49,15 @@ class Game
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: GameParticipant::class)]
     private Collection $gameParticipants;
 
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: GameWinner::class)]
+    private Collection $gameWinner;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->proposals = new ArrayCollection();
         $this->gameParticipants = new ArrayCollection();
+        $this->gameWinner = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -232,6 +232,36 @@ class Game
             // set the owning side to null (unless already changed)
             if ($gameParticipant->getGame() === $this) {
                 $gameParticipant->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GameWinner>
+     */
+    public function getGameWinner(): Collection
+    {
+        return $this->gameWinner;
+    }
+
+    public function addGameWinner(GameWinner $gameWinner): self
+    {
+        if (!$this->gameWinner->contains($gameWinner)) {
+            $this->gameWinner->add($gameWinner);
+            $gameWinner->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameWinner(GameWinner $gameWinner): self
+    {
+        if ($this->gameWinner->removeElement($gameWinner)) {
+            // set the owning side to null (unless already changed)
+            if ($gameWinner->getGame() === $this) {
+                $gameWinner->setGame(null);
             }
         }
 

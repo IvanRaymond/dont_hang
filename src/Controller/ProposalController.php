@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\GameParticipant;
+use App\Entity\GameWinner;
 use App\Entity\Proposal;
 use App\Entity\Room;
 use App\Entity\User;
@@ -38,8 +39,13 @@ class ProposalController extends AbstractController
         if(!$gameParticipant){
             return new Response('User not found in game', 404);
         }
+        $gameWinner = $entityManager->getRepository(GameWinner::class)->findOneByGameAndUser($game->getId(), $user->getId());
+        if($gameWinner){
+            return new Response('User already won this game', 400);
+        }
         $proposition = $request->query->get('proposition');
         if(strlen($proposition) > 0) {
+            // TODO : Keep track of word status individually for each user for classic games
             $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
             $proposal = new Proposal();
             $proposal->setGame($game);
@@ -54,9 +60,14 @@ class ProposalController extends AbstractController
             $entityManager->flush();
             if($game->getWord() === $game->getWordStatus()) {
                 $game->setWon(true);
-                $game->setWinner($user);
                 $game->setFinishedAt(new \DateTime());
                 $entityManager->persist($game);
+                $entityManager->flush();
+                $gameWinner = new GameWinner();
+                $gameWinner->setGame($game);
+                $gameWinner->setUser($user);
+                $gameWinner->setPoints($points);
+                $entityManager->persist($gameWinner);
                 $entityManager->flush();
                 // TODO: Push to all subscribers that the game has been won
 
