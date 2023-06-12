@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RankingRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RankingRepository::class)]

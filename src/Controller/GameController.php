@@ -9,6 +9,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -45,7 +47,7 @@ class GameController extends AbstractController
     }
 
     #[Route('/room/{roomId}/game/create', name: 'app_game_create')]
-    public function startGame(Request $request, int $roomId, EntityManagerInterface $entityManager): Response
+    public function startGame(Request $request, int $roomId, EntityManagerInterface $entityManager, HubInterface $hub): Response
     {
         // Check if there is already a game active
         $room = $entityManager->getRepository(Room::class)->find($roomId);
@@ -60,6 +62,7 @@ class GameController extends AbstractController
         $duration = $request->query->get('duration');
         $word = $request->query->get('word');
         $init = $request->query->get('init');
+        $classic = $request->query->get('classic');
         if(!$duration || !$word || !$init){
             return new Response('Missing parameters', 400);
         }
@@ -69,6 +72,7 @@ class GameController extends AbstractController
         $game->setDuration($duration);
         $game->setWord($word);
         $game->setWordStatus($init);
+        $game->setIsClassic($classic);
         $entityManager->persist($game);
         $entityManager->flush();
         // Add all room participants to game participants
@@ -76,21 +80,37 @@ class GameController extends AbstractController
         foreach ($roomParticipants as $roomParticipant) {
             $gameParticipant = new GameParticipant();
             $gameParticipant->setGame($game);
+            $gameParticipant->setWordStatus($init);
             $gameParticipant->setUser($roomParticipant->getUser());
             $entityManager->persist($gameParticipant);
             $entityManager->flush();
         }
-        // TODO: Push to all subscribers that game has started
-
-        sleep($duration);
-        $game->setActive(false);
-        $entityManager->persist($game);
-        $entityManager->flush();
-
-        $json = $this->getSerializedGame($game);
-        return new Response($json, 200, [
-            'Content-Type' => 'application/json'
-        ]);
+        // Push to all subscribers that game has started
+        // Send game data
+//        $update = new Update(
+//            'http://localhost:8000/room/' . $roomId . '/game/watch',
+//            $this->getSerializedGame($game),
+//            false
+//        );
+//
+////        $hub->publish($update);
+//
+//        // game loop
+//        while($game->isActive()){
+//            // Manage turns
+//            // get list of all game participants
+//            $gameParticipants = $game->getGameParticipants();
+//            foreach ($gameParticipants as $gameParticipant) {
+//                // Push to the gameParticipant that it is his turn and wait for response
+//                // Let the player answer using the proposal endpoint
+//                // Watch proposal endpoint for response ?
+//                // Go to next player
+//            }
+//
+//
+//        }
+        // return game result
+        return new Response('Game created', 200);
     }
 
     #[Route('/room/{roomId}/game/end', name: 'app_game_end')]
@@ -109,7 +129,7 @@ class GameController extends AbstractController
         // End game
         $game->setActive(false);
         $game->setWon(false);
-        // TODO: Create trigger in DB to update finished_in when isWon is updated
+        // TODO: Create trigger in DB to update finished_at when isWon is updated
         // Save game
         $entityManager->persist($game);
         $entityManager->flush();

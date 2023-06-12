@@ -37,9 +37,8 @@ class Game
     #[ORM\Column]
     private ?bool $won = false;
 
-    #[ORM\ManyToOne(inversedBy: 'games')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?User $winner = null;
+    #[ORM\Column]
+    private ?bool $isClassic = true;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
@@ -50,11 +49,15 @@ class Game
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: GameParticipant::class)]
     private Collection $gameParticipants;
 
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: GameWinner::class)]
+    private Collection $gameWinners;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->proposals = new ArrayCollection();
         $this->gameParticipants = new ArrayCollection();
+        $this->gameWinners = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -146,14 +149,14 @@ class Game
         return $this;
     }
 
-    public function getWinner(): ?User
+    public function isClassic(): ?bool
     {
-        return $this->winner;
+        return $this->isClassic;
     }
 
-    public function setWinner(?User $winner): self
+    public function setIsClassic(bool $isClassic): self
     {
-        $this->winner = $winner;
+        $this->isClassic = $isClassic;
 
         return $this;
     }
@@ -217,6 +220,36 @@ class Game
             // set the owning side to null (unless already changed)
             if ($gameParticipant->getGame() === $this) {
                 $gameParticipant->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GameWinner>
+     */
+    public function getGameWinners(): Collection
+    {
+        return $this->gameWinners;
+    }
+
+    public function addGameWinner(GameWinner $gameWinner): self
+    {
+        if (!$this->gameWinners->contains($gameWinner)) {
+            $this->gameWinners->add($gameWinner);
+            $gameWinner->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameWinner(GameWinner $gameWinner): self
+    {
+        if ($this->gameWinners->removeElement($gameWinner)) {
+            // set the owning side to null (unless already changed)
+            if ($gameWinner->getGame() === $this) {
+                $gameWinner->setGame(null);
             }
         }
 

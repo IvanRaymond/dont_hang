@@ -47,9 +47,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at;
 
-    #[ORM\OneToMany(mappedBy: 'winner', targetEntity: Game::class)]
-    private Collection $games;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Proposal::class)]
     private Collection $proposals;
 
@@ -59,13 +56,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: RoomParticipant::class)]
     public Collection $roomParticipants;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: GameWinner::class)]
+    public Collection $gameWinners;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
-        $this->games = new ArrayCollection();
         $this->proposals = new ArrayCollection();
         $this->rooms = new ArrayCollection();
         $this->roomParticipants = new ArrayCollection();
+        $this->gameWinners = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -197,36 +197,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Game>
-     */
-    public function getGames(): Collection
-    {
-        return $this->games;
-    }
-
-    public function addGame(Game $game): self
-    {
-        if (!$this->games->contains($game)) {
-            $this->games->add($game);
-            $game->setWinner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGame(Game $game): self
-    {
-        if ($this->games->removeElement($game)) {
-            // set the owning side to null (unless already changed)
-            if ($game->getWinner() === $this) {
-                $game->setWinner(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Proposal>
      */
     public function getProposals(): Collection
@@ -310,6 +280,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($roomParticipant->getUser() === $this) {
                 $roomParticipant->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GameWinner>
+     */
+    public function getGameWinners(): Collection
+    {
+        return $this->gameWinners;
+    }
+
+    public function addGameWinner(GameWinner $gameWinner): self
+    {
+        if (!$this->gameWinners->contains($gameWinner)) {
+            $this->gameWinners->add($gameWinner);
+            $gameWinner->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameWinner(GameWinner $gameWinner): self
+    {
+        if ($this->gameWinners->removeElement($gameWinner)) {
+            // set the owning side to null (unless already changed)
+            if ($gameWinner->getUser() === $this) {
+                $gameWinner->setUser(null);
             }
         }
 

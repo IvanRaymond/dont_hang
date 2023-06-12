@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
+use App\Entity\GameParticipant;
 use App\Entity\User;
 use App\Entity\Room;
 use App\Entity\RoomParticipant;
@@ -11,12 +13,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RoomParticipantController extends AbstractController
 {
     #[Route('/room/{id}/join', name: 'app_join_room')]
-    public function joinRoom(EntityManagerInterface $entityManager, int $id): Response
+    public function joinRoom(EntityManagerInterface $entityManager, int $id, HubInterface $hub): Response
     {
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
@@ -47,6 +51,16 @@ class RoomParticipantController extends AbstractController
             $room_participant->setRoom($room);
             $entityManager->persist($room_participant);
             $entityManager->flush();
+            $game = $entityManager->getRepository(Game::class)->findLatestByRoom($room->getId());
+            if ($game && $game->isActive() && $game->getIsClassic()) {
+                $game_participant = new GameParticipant();
+                $game_participant->setUser($user);
+                $game_participant->setGame($game);
+                $entityManager->persist($game_participant);
+                $entityManager->flush();
+            }
+            // Send update to Mercure hub
+            $this->updatePlayerList($entityManager, $hub, $id);
         } else {
             // Check if user is banned
             if ($room_participant->isBanned()) {
@@ -59,7 +73,7 @@ class RoomParticipantController extends AbstractController
     }
 
     #[Route('/room/{id}/leave', name: 'app_leave_room')]
-    public function leaveRoom(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    public function leaveRoom(Request $request, EntityManagerInterface $entityManager, int $id, HubInterface $hub): Response
     {
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
@@ -74,6 +88,8 @@ class RoomParticipantController extends AbstractController
             $room_participant->setActive(false);
             $entityManager->persist($room_participant);
             $entityManager->flush();
+            // Send update to Mercure hub
+            $this->updatePlayerList($entityManager, $hub, $id);
         }
 
         // When finished, redirect to home
@@ -81,7 +97,7 @@ class RoomParticipantController extends AbstractController
     }
 
     #[Route('/room/{id}/kick/{user_id}', name: 'app_kick_room')]
-    public function kickParticipant(Request $request, EntityManagerInterface $entityManager, int $id, int $user_id): Response
+    public function kickParticipant(Request $request, EntityManagerInterface $entityManager, int $id, int $user_id, HubInterface $hub): Response
     {
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
@@ -110,10 +126,32 @@ class RoomParticipantController extends AbstractController
                 $room_participant_to_kick->setActive(false);
                 $entityManager->persist($room_participant_to_kick);
                 $entityManager->flush();
+                // Send update to Mercure hub
+                $this->updatePlayerList($entityManager, $hub, $id);
             }
             $this->addFlash('success', 'User ' . $user_to_kick->getUsername() . ' kicked');
         }
 
         return new JsonResponse(['success' => true]);
+    }
+
+    /**
+     * Push player list update
+     * @param EntityManagerInterface $entityManager
+     * @param HubInterface $hub
+     * @param int $roomId
+     * @return void
+     */
+    private function updatePlayerList(EntityManagerInterface $entityManager, HubInterface $hub, int $roomId): void
+    {
+        $roomParticipants = $entityManager->getRepository(RoomParticipant::class)->findByRoom($roomId);
+        $update = new Update(
+            'http://localhost:3000/room/' . $roomId,
+            json_encode([
+                'type' => 'players',
+                'players' => $roomParticipants,
+            ])
+        );
+//        $hub->publish($update);
     }
 }

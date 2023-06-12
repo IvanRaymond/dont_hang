@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\GameParticipant;
+use App\Entity\GameWinner;
 use App\Entity\Proposal;
 use App\Entity\Room;
 use App\Entity\User;
@@ -38,9 +39,24 @@ class ProposalController extends AbstractController
         if(!$gameParticipant){
             return new Response('User not found in game', 404);
         }
+        $gameWinner = $entityManager->getRepository(GameWinner::class)->findOneByGameAndUser($game->getId(), $user->getId());
+        if($gameWinner){
+            return new Response('User already won this game', 400);
+        }
         $proposition = $request->query->get('proposition');
         if(strlen($proposition) > 0) {
-            $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
+            if($game->isClassic()) {
+                $points = $this->getPoints($game->getWord(), $gameParticipant->getWordStatus(), $proposition);
+            } else {
+                $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
+            }
+
+
+            $gameParticipant->setWordStatus($this->updateWordStatus($game->getWord(), $gameParticipant->getWordStatus(), $proposition));
+            $gameParticipant->setAttempts($gameParticipant->getAttempts() + 1);
+            $gameParticipant->setPoints($gameParticipant->getPoints() + $points);
+            $entityManager->persist($gameParticipant);
+            $entityManager->flush();
             $proposal = new Proposal();
             $proposal->setGame($game);
             $proposal->setUser($user);
@@ -49,22 +65,15 @@ class ProposalController extends AbstractController
             $proposal->setPoints($points);
             $entityManager->persist($proposal);
             $entityManager->flush();
-            $game->setWordStatus($this->updateWordStatus($game->getWord(), $game->getWordStatus(), $proposition));
-            $entityManager->persist($game);
-            $entityManager->flush();
-            if($game->getWord() === $game->getWordStatus()) {
-                $game->setWon(true);
-                $game->setWinner($user);
-                $game->setFinishedAt(new \DateTime());
-                $entityManager->persist($game);
-                $entityManager->flush();
-                // TODO: Push to all subscribers that the game has been won
-
+            if($game->isClassic()) {
+                $is_won = $this->singlePlayerProcedure($game, $user, $gameParticipant->getPoints(), $gameParticipant, $entityManager);
+            } else {
+                $is_won = $this->multiPlayerProcedure($game, $user, $gameParticipant->getPoints(), $proposition, $entityManager);
             }
             // Return points won and if game is won
             return new Response(json_encode([
                 'points' => $points,
-                'isWon' => $game->isWon()
+                'isWon' =>  $is_won
             ]), 200, [
                 'Content-Type' => 'application/json'
             ]);
@@ -116,7 +125,7 @@ class ProposalController extends AbstractController
 
         if (count($propositionArr) === 1) {
             $letter = $propositionArr[0];
-            $index = array_search($letter, $wordStatusArr);
+            $index = array_search($letter, $wordArr);
 
             if ($index !== false && $wordStatusArr[$index] === '_') {
                 $discoveredLetters[] = $letter;
@@ -131,5 +140,43 @@ class ProposalController extends AbstractController
             }
         }
         return count(array_unique($discoveredLetters));
+    }
+
+    private function singlePlayerProcedure(Game $game, User $user, int $points, GameParticipant $gameParticipant, EntityManagerInterface $entityManager): ?bool
+    {
+        if($game->getWord() === $gameParticipant->getWordStatus()) {
+            $gameWinner = new GameWinner();
+            $gameWinner->setGame($game);
+            $gameWinner->setUser($user);
+            $gameWinner->setPoints($points);
+            $entityManager->persist($gameWinner);
+            $entityManager->flush();
+
+            return true;
+        }
+        return false;
+    }
+
+    private function multiPlayerProcedure(Game $game, User $user, int $points, $proposition, EntityManagerInterface $entityManager): ?bool
+    {
+        $game->setWordStatus($this->updateWordStatus($game->getWord(), $game->getWordStatus(), $proposition));
+        $entityManager->persist($game);
+        $entityManager->flush();
+        if($game->getWord() === $game->getWordStatus()) {
+            $game->setWon(true);
+            $game->setFinishedAt(new \DateTime());
+            $entityManager->persist($game);
+            $entityManager->flush();
+            $gameWinner = new GameWinner();
+            $gameWinner->setGame($game);
+            $gameWinner->setUser($user);
+            $gameWinner->setPoints($points);
+            $entityManager->persist($gameWinner);
+            $entityManager->flush();
+            // TODO: Push to all subscribers that the game has been won
+
+            return true;
+        }
+        return false;
     }
 }
