@@ -67,9 +67,9 @@ class ProposalController extends AbstractController
             $entityManager->persist($proposal);
             $entityManager->flush();
             if($game->isClassic()) {
-                $is_won = $this->singlePlayerProcedure($game, $user, $points, $gameParticipant, $entityManager);
+                $is_won = $this->singlePlayerProcedure($game, $user, $gameParticipant->getPoints(), $gameParticipant, $entityManager);
             } else {
-                $is_won = $this->multiPlayerProcedure($game, $user, $points, $proposition, $entityManager);
+                $is_won = $this->multiPlayerProcedure($game, $user, $gameParticipant->getPoints(), $proposition, $entityManager);
             }
             // Return points won and if game is won
             return new Response(json_encode([
