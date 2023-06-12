@@ -23,7 +23,7 @@
   color: black;
 }
 
-.join:hover {
+.join:hover, .create-party:hover {
   background-color: #eee;
   cursor: pointer;
 }
@@ -61,11 +61,28 @@ li>span{
   flex: 2;
 }
 
+h2 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.create-party {
+  display: flex;
+  align-items: center;
+  padding: 1em;
+  color: purple;
+}
+
 </style>
 
 <div class="container-flex">
   <div class="container-item">
-    <h2>{{ 'home.table.game.title'|trans|raw }}</h2>
+    <h2>
+      <span>{{ 'home.table.game.title'|trans|raw }}</span>
+      {% if is_admin %}
+        <a class="join-link create-party border lined thick" href="">{{ 'home.table.game.create_party'|trans|raw }}</a>
+      {% endif %}
+    </h2>
     <div class="current-parties">
       <ul class="border lined thick">
         <li class="partie-item">
