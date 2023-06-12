@@ -9,7 +9,6 @@ use App\Entity\Proposal;
 use App\Entity\Room;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProposalController extends AbstractController
 {
     #[Route('/room/{roomId}/game/proposal', name: 'app_proposal_make')]
-    public function create(int $roomId, Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    public function create(int $roomId, Request $request, EntityManagerInterface $entityManager): Response
     {
         //Check if user is logged in
         if(!$this->getUser()){
