@@ -80,36 +80,37 @@ class GameController extends AbstractController
         foreach ($roomParticipants as $roomParticipant) {
             $gameParticipant = new GameParticipant();
             $gameParticipant->setGame($game);
+            $gameParticipant->setWordStatus($init);
             $gameParticipant->setUser($roomParticipant->getUser());
             $entityManager->persist($gameParticipant);
             $entityManager->flush();
         }
         // Push to all subscribers that game has started
         // Send game data
-        $update = new Update(
-            'http://localhost:8000/room/' . $roomId . '/game/watch',
-            $this->getSerializedGame($game),
-            false
-        );
-
-        $hub->publish($update);
-
-        // game loop
-        while($game->isActive()){
-            // Manage turns
-            // get list of all game participants
-            $gameParticipants = $game->getGameParticipants();
-            foreach ($gameParticipants as $gameParticipant) {
-                // Push to the gameParticipant that it is his turn and wait for response
-                // Let the player answer using the proposal endpoint
-                // Watch proposal endpoint for response ?
-                // Go to next player
-            }
-
-
-        }
+//        $update = new Update(
+//            'http://localhost:8000/room/' . $roomId . '/game/watch',
+//            $this->getSerializedGame($game),
+//            false
+//        );
+//
+////        $hub->publish($update);
+//
+//        // game loop
+//        while($game->isActive()){
+//            // Manage turns
+//            // get list of all game participants
+//            $gameParticipants = $game->getGameParticipants();
+//            foreach ($gameParticipants as $gameParticipant) {
+//                // Push to the gameParticipant that it is his turn and wait for response
+//                // Let the player answer using the proposal endpoint
+//                // Watch proposal endpoint for response ?
+//                // Go to next player
+//            }
+//
+//
+//        }
         // return game result
-        return new Response('Game finished', 200);
+        return new Response('Game created', 200);
     }
 
     #[Route('/room/{roomId}/game/end', name: 'app_game_end')]

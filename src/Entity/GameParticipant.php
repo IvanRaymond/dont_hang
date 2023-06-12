@@ -23,6 +23,15 @@ class GameParticipant
     private ?User $user = null;
 
     #[ORM\Column]
+    private ?string $word_status = null;
+
+    #[ORM\Column]
+    private ?int $points = 0;
+
+    #[ORM\Column]
+    private ?int $attempts = 0;
+
+    #[ORM\Column]
     private ?bool $active = true;
 
     #[ORM\Column]
@@ -57,6 +66,39 @@ class GameParticipant
     public function setUser(User $user): GameParticipant
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function getWordStatus(): ?string
+    {
+        return $this->word_status;
+    }
+
+    public function setWordStatus(string $word_status): GameParticipant
+    {
+        $this->word_status = $word_status;
+        return $this;
+    }
+
+    public function getPoints(): ?int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): GameParticipant
+    {
+        $this->points = $points;
+        return $this;
+    }
+
+    public function getAttempts(): ?int
+    {
+        return $this->attempts;
+    }
+
+    public function setAttempts(int $attempts): GameParticipant
+    {
+        $this->attempts = $attempts;
         return $this;
     }
 

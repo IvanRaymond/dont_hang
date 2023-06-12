@@ -9,6 +9,7 @@ use App\Entity\Proposal;
 use App\Entity\Room;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProposalController extends AbstractController
 {
     #[Route('/room/{roomId}/game/proposal', name: 'app_proposal_make')]
-    public function create(int $roomId, Request $request, EntityManagerInterface $entityManager): Response
+    public function create(int $roomId, Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         //Check if user is logged in
         if(!$this->getUser()){
@@ -45,8 +46,18 @@ class ProposalController extends AbstractController
         }
         $proposition = $request->query->get('proposition');
         if(strlen($proposition) > 0) {
-            // TODO : Keep track of word status individually for each user for classic games
-            $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
+            if($game->isClassic()) {
+                $points = $this->getPoints($game->getWord(), $gameParticipant->getWordStatus(), $proposition);
+            } else {
+                $points = $this->getPoints($game->getWord(), $game->getWordStatus(), $proposition);
+            }
+
+
+            $gameParticipant->setWordStatus($this->updateWordStatus($game->getWord(), $gameParticipant->getWordStatus(), $proposition));
+            $gameParticipant->setAttempts($gameParticipant->getAttempts() + 1);
+            $gameParticipant->setPoints($gameParticipant->getPoints() + $points);
+            $entityManager->persist($gameParticipant);
+            $entityManager->flush();
             $proposal = new Proposal();
             $proposal->setGame($game);
             $proposal->setUser($user);
@@ -55,27 +66,15 @@ class ProposalController extends AbstractController
             $proposal->setPoints($points);
             $entityManager->persist($proposal);
             $entityManager->flush();
-            $game->setWordStatus($this->updateWordStatus($game->getWord(), $game->getWordStatus(), $proposition));
-            $entityManager->persist($game);
-            $entityManager->flush();
-            if($game->getWord() === $game->getWordStatus()) {
-                $game->setWon(true);
-                $game->setFinishedAt(new \DateTime());
-                $entityManager->persist($game);
-                $entityManager->flush();
-                $gameWinner = new GameWinner();
-                $gameWinner->setGame($game);
-                $gameWinner->setUser($user);
-                $gameWinner->setPoints($points);
-                $entityManager->persist($gameWinner);
-                $entityManager->flush();
-                // TODO: Push to all subscribers that the game has been won
-
+            if($game->isClassic()) {
+                $is_won = $this->singlePlayerProcedure($game, $user, $points, $gameParticipant, $entityManager);
+            } else {
+                $is_won = $this->multiPlayerProcedure($game, $user, $points, $proposition, $entityManager);
             }
             // Return points won and if game is won
             return new Response(json_encode([
                 'points' => $points,
-                'isWon' => $game->isWon()
+                'isWon' =>  $is_won
             ]), 200, [
                 'Content-Type' => 'application/json'
             ]);
@@ -127,7 +126,7 @@ class ProposalController extends AbstractController
 
         if (count($propositionArr) === 1) {
             $letter = $propositionArr[0];
-            $index = array_search($letter, $wordStatusArr);
+            $index = array_search($letter, $wordArr);
 
             if ($index !== false && $wordStatusArr[$index] === '_') {
                 $discoveredLetters[] = $letter;
@@ -142,5 +141,43 @@ class ProposalController extends AbstractController
             }
         }
         return count(array_unique($discoveredLetters));
+    }
+
+    private function singlePlayerProcedure(Game $game, User $user, int $points, GameParticipant $gameParticipant, EntityManagerInterface $entityManager): ?bool
+    {
+        if($game->getWord() === $gameParticipant->getWordStatus()) {
+            $gameWinner = new GameWinner();
+            $gameWinner->setGame($game);
+            $gameWinner->setUser($user);
+            $gameWinner->setPoints($points);
+            $entityManager->persist($gameWinner);
+            $entityManager->flush();
+
+            return true;
+        }
+        return false;
+    }
+
+    private function multiPlayerProcedure(Game $game, User $user, int $points, $proposition, EntityManagerInterface $entityManager): ?bool
+    {
+        $game->setWordStatus($this->updateWordStatus($game->getWord(), $game->getWordStatus(), $proposition));
+        $entityManager->persist($game);
+        $entityManager->flush();
+        if($game->getWord() === $game->getWordStatus()) {
+            $game->setWon(true);
+            $game->setFinishedAt(new \DateTime());
+            $entityManager->persist($game);
+            $entityManager->flush();
+            $gameWinner = new GameWinner();
+            $gameWinner->setGame($game);
+            $gameWinner->setUser($user);
+            $gameWinner->setPoints($points);
+            $entityManager->persist($gameWinner);
+            $entityManager->flush();
+            // TODO: Push to all subscribers that the game has been won
+
+            return true;
+        }
+        return false;
     }
 }

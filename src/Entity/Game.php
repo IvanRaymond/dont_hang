@@ -50,14 +50,14 @@ class Game
     private Collection $gameParticipants;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: GameWinner::class)]
-    private Collection $gameWinner;
+    private Collection $gameWinners;
 
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->proposals = new ArrayCollection();
         $this->gameParticipants = new ArrayCollection();
-        $this->gameWinner = new ArrayCollection();
+        $this->gameWinners = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -149,19 +149,7 @@ class Game
         return $this;
     }
 
-    public function getWinner(): ?User
-    {
-        return $this->winner;
-    }
-
-    public function setWinner(?User $winner): self
-    {
-        $this->winner = $winner;
-
-        return $this;
-    }
-
-    public function getIsClassic(): ?bool
+    public function isClassic(): ?bool
     {
         return $this->isClassic;
     }
@@ -241,15 +229,15 @@ class Game
     /**
      * @return Collection<int, GameWinner>
      */
-    public function getGameWinner(): Collection
+    public function getGameWinners(): Collection
     {
-        return $this->gameWinner;
+        return $this->gameWinners;
     }
 
     public function addGameWinner(GameWinner $gameWinner): self
     {
-        if (!$this->gameWinner->contains($gameWinner)) {
-            $this->gameWinner->add($gameWinner);
+        if (!$this->gameWinners->contains($gameWinner)) {
+            $this->gameWinners->add($gameWinner);
             $gameWinner->setGame($this);
         }
 
@@ -258,7 +246,7 @@ class Game
 
     public function removeGameWinner(GameWinner $gameWinner): self
     {
-        if ($this->gameWinner->removeElement($gameWinner)) {
+        if ($this->gameWinners->removeElement($gameWinner)) {
             // set the owning side to null (unless already changed)
             if ($gameWinner->getGame() === $this) {
                 $gameWinner->setGame(null);
