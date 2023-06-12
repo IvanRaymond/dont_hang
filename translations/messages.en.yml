@@ -12,6 +12,7 @@ home:
       name: Name
       player_count: Player count
       player_joined: Player joined
+      create_party: Create a party
       join: Join
     ranking:
       title: Ranking
