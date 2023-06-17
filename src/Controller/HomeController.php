@@ -55,27 +55,36 @@ class HomeController extends BaseController
             $room->setCapacity(100);
             $room->setGameCount(1);
 
+            $entityManager->persist($room);
+            // $entityManager->persist($game);
+            $entityManager->flush();
+
             $roomId = $room->getId();
-            
+
             $data = [
                 'word' => $word,
                 'duration' => $duration,
                 'init' => $initWord,
                 'classic' => $isClassic,
             ];
-            
-            if ($roomId !== null) {
-                $url = $this->generateUrl('app_game_create', ['roomId' => $roomId]);
+
+            if ($roomId != null) {
+                $httpHost = rtrim($_SERVER['HTTP_HOST'], '/');
+                $url = 'http://' . $httpHost;
+                $url .= $this->generateUrl('app_game_create', ['roomId' => $roomId]);
                 $response = $httpClient->request('POST', $url, [
                     'json' => $data,
                 ]);
+
                 if ($response->getStatusCode() == 200) {
                     $this->addFlash('success', 'Ajout d\'une partie réussi.');
                 } else {
-                    $this->addFlash('success', 'Erreur lors de l\'ajout d\'une partie.');
+                    $statusCode = $response->getStatusCode();
+                    $errorMessage = $response->getContent();
+                    $this->addFlash('success', $statusCode . $errorMessage);
                 }
             } else {
-                $this->addFlash('success', 'Erreur lors de l\'ajout d\'une partie.' . $roomId);
+                $this->addFlash('success', 'Room id introuvable');
             }
 
             // $game->setRoom($room);
@@ -85,18 +94,6 @@ class HomeController extends BaseController
             // $game->setWordStatus($initWord);
             // $game->setIsClassic($isClassic);
 
-            $entityManager->persist($room);
-            // $entityManager->persist($game);
-            $entityManager->flush();
-
-            // return $this->forward('App\Controller\RoomController::createGame', [
-            //     'roomId' => $roomId,
-            //     'name' => $name,
-            //     'word' => $word,
-            //     'duration' => $duration,
-            //     'isClassic' => $isClassic,
-            // ]);
-            
             return $this->redirectToRoute('app_home');
         }
 
