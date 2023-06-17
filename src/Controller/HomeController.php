@@ -10,11 +10,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HomeController extends BaseController
 {
     #[Route('/', name: 'app_home')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, HttpClientInterface $httpClient): Response
     {
         $isLogged = $this->isLoggedIn();
         if ($isLogged) {
@@ -27,35 +29,76 @@ class HomeController extends BaseController
         $form = $this->createForm(CreateGameType::class, $game);
         $form->handleRequest($request);
 
-        // if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $isClassic = $form->get('isClassic')->getData();
+            if (!$isClassic) {
+                // redirect to a form multiplayer
+                return $this->redirectToRoute('app_room_create');
+            }
+
+            // get data from form
+            $name = $form->get('name')->getData();
+            $word = $form->get('word')->getData();
+            $duration = $form->get('duration')->getData();
+            $isClassic = $form->get('isClassic')->getData();
+            $wordLength = strlen($word);
+            $initWord = '';
+            for ($i = 0; $i < $wordLength; $i++) {
+                $initWord .= '_';
+            }
+            
+            // create a room
+            $room = new Room();
+            $room->setOwner($this->getUser());
+            $room->setName($name);
+            $room->setCapacity(100);
+            $room->setGameCount(1);
+
+            $roomId = $room->getId();
+            
+            $data = [
+                'word' => $word,
+                'duration' => $duration,
+                'init' => $initWord,
+                'classic' => $isClassic,
+            ];
+            
+            if ($roomId !== null) {
+                $url = $this->generateUrl('app_game_create', ['roomId' => $roomId]);
+                $response = $httpClient->request('POST', $url, [
+                    'json' => $data,
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    $this->addFlash('success', 'Ajout d\'une partie réussi.');
+                } else {
+                    $this->addFlash('success', 'Erreur lors de l\'ajout d\'une partie.');
+                }
+            } else {
+                $this->addFlash('success', 'Erreur lors de l\'ajout d\'une partie.' . $roomId);
+            }
+
             // $game->setRoom($room);
             // $game->setDuration($duration);
             // $game->setWord($word);
-            // $game->setWordStatus($init);
-            // $picture = $photoForm->get('picture')->getData();
 
-            // if ($picture->getClientOriginalExtension() != "jpeg") {
-            //     // display a snackbar error
-            //     $this->addFlash('success', 'Mauvaise extension du fichier. (jpeg)');
-            //     return $this->redirectToRoute('app_account_edit');
-            // }
+            // $game->setWordStatus($initWord);
+            // $game->setIsClassic($isClassic);
 
-            // // move the file to the right folder
-            // $pictureUrl = uniqid().'.jpeg';
-            // $picture->move(
-            //     "assets/users",
-            //     $pictureUrl
-            // );
+            $entityManager->persist($room);
+            // $entityManager->persist($game);
+            $entityManager->flush();
 
-            // $this->getUser()->setPicture($pictureUrl);
-
-            // $entityManager->persist($user);
-            // $entityManager->flush();
-
-            // display a snackbar success
-            // $this->addFlash('success', 'Photo de profil modifiée.');
-            // return $this->redirectToRoute('app_account');
-        // }
+            // return $this->forward('App\Controller\RoomController::createGame', [
+            //     'roomId' => $roomId,
+            //     'name' => $name,
+            //     'word' => $word,
+            //     'duration' => $duration,
+            //     'isClassic' => $isClassic,
+            // ]);
+            
+            return $this->redirectToRoute('app_home');
+        }
 
         $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
 
