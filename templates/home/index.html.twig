@@ -23,7 +23,7 @@
   color: black;
 }
 
-.join:hover, .create-party:hover {
+.join:hover {
   background-color: #eee;
   cursor: pointer;
 }
@@ -73,6 +73,71 @@ h2 {
   color: purple;
 }
 
+.form-row input {
+  color: white;
+  font-family: kg_indie_flowerregular;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.form-row div:first-child {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-row div:nth-child(1) {
+  margin-bottom: 15px;
+  display: flex;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+form > div:nth-child(1) > div > label {
+  flex: 1; 
+}
+
+#content > div > div:nth-child(1) > h2 > div.modal.active > div > form > div:nth-child(3) > div > label{
+  flex: 1; 
+}
+
+.form-row ul {
+  display: none;
+}
+
+.valid-createparty-row {
+  text-align: center;
+}
+
+.valid-createparty-row:hover {
+  cursor: pointer;
+  background-color: rgb(57, 17, 17);
+}
+
+.valid-createparty-row:hover > button {
+  cursor: pointer;
+  background-color: rgb(57, 17, 17);
+}
+
+.valid-createparty-row button {
+  color: white;
+  border: 0;
+  font-size: 20px;
+  font-family: kg_indie_flowerregular;
+  background-color: rgb(54, 54, 54);
+}
+
+.isClassic-row {
+  width: 25px;
+  height: 25px;
+  flex: 0.5;
+  align-self: center;
+}
+
+
+.modal .modal-actions {
+  width: 50%;
+}
+
 </style>
 
 <div class="container-flex">
@@ -80,7 +145,109 @@ h2 {
     <h2>
       <span>{{ 'home.table.game.title'|trans|raw }}</span>
       {% if is_admin %}
-        <a class="join-link create-party border lined thick" href="">{{ 'home.table.game.create_party'|trans|raw }}</a>
+        <span class="join-link create-party border lined thick">{{ 'home.table.game.create_party'|trans|raw }}</span>
+
+        <script>
+          const buttonCreateParty = document.querySelector('.create-party');
+
+          /** Show the overlay */
+          function showOverlay() {
+            const overlay = document.getElementById("overlay");
+            overlay.style.opacity = '1';
+            overlay.classList.add('active');
+          }
+
+          /** Hide the overlay */
+          function hideOverlay() {
+            const overlay = document.getElementById("overlay");
+            overlay.style.opacity = '0';
+            setTimeout(function() {
+              overlay.classList.remove('active');
+            }, 500);
+          }
+
+          /** Show the modal */
+          function showModal() {
+            const modal = document.querySelector('.modal');
+
+            modal.style.opacity = '1';
+            modal.classList.add('active');
+            showOverlay();
+
+          }
+
+          buttonCreateParty.addEventListener('click', showModal);
+
+          function hideModal() {
+            const modal = document.querySelector('.modal');
+
+            modal.style.opacity = '0';
+            setTimeout(function() {
+              modal.classList.remove('active');
+              modal.classList.remove("disabled-action");
+            }, 1000);
+
+          }
+
+          document.addEventListener("DOMContentLoaded", function() {
+            const closeButton = document.querySelector('.modal-action-close');
+            closeButton.addEventListener('click', hideModal);
+            closeButton.addEventListener('click', hideOverlay);
+
+            const overlay = document.getElementById("overlay");
+            overlay.addEventListener('click', hideModal);
+            overlay.addEventListener('click', hideOverlay);
+          });
+
+        </script>
+        <div id="overlay"></div>
+        <div class="modal">
+          <div class="modal-content">
+
+
+           {{ form_start(createGameForm) }}
+        <div class="form-row">
+            {{ form_row(createGameForm.word, {
+              attr: { 
+                'class': 'word-row border lined thick'
+              }}
+            )}}
+        </div>
+
+        <div class="form-row">
+            {{ form_row(createGameForm.duration, 
+              { 'attr': { 
+                'class': 'duration-row border lined thick'
+              }}
+            )}}
+        </div>
+
+        <div class="form-row">
+            {{ form_row(createGameForm.isClassic, {
+                label: 'Classic mode',
+                attr: {
+                  'class': 'isClassic-row border lined thick'
+                }
+            }) }}
+        </div>
+        <div class="valid-createparty-row border lined thick">
+          <button type="submit" class="valid-createparty-btn">{{ 'home.table.game.create_party'|trans|raw }}</button>
+        </div>
+
+        <script>
+          const divValidCreateparty = document.querySelector('.valid-createparty-row');
+          const buttonSubmitCreateparty= document.querySelector('.valid-createparty-btn');
+
+          divValidCreateparty.addEventListener('click', function() {
+            buttonSubmitCreateparty.click();
+          });
+        </script>
+      {{ form_end(createGameForm) }}
+            <div class="modal-actions">
+              <div id="close" class="modal-action-close">Close</div>
+            </div>
+          </div>
+        </div>
       {% endif %}
     </h2>
     <div class="current-parties">
