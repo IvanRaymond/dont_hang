@@ -101,6 +101,7 @@ body {
   transition: 0.5s;
   visibility: hidden;
   opacity: 0;
+  background-color: white;
 }
 
 .navbar-right .menu.active {
