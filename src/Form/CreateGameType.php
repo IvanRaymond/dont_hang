@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Game;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,6 +16,9 @@ class CreateGameType extends AbstractType
             ->add('word')
             ->add('duration')
             ->add('isClassic')
+            ->add('name', TextType::class, [
+                'mapped' => false, // not mapped to the entity
+            ]);
         ;
     }
 
