@@ -50,7 +50,7 @@ class GameController extends AbstractController
      * Returns statistics for a given game
      */
     #[Route('/room/{roomId}/game/stats/{gameId}', name: 'app_game_stats')]
-    public function getStatistiques(int $roomId, int $gameId, EntityManagerInterface $entityManager): Response {
+    public function getStatistics(int $roomId, int $gameId, EntityManagerInterface $entityManager): Response {
         // retrieve room
         $room = $entityManager->getRepository(Room::class)->find($roomId);
 
