@@ -30,6 +30,7 @@ room:
   game_master: Maître du jeu
   popup:
     proposal:
+      title: Faire une proposition
       letter:
         title: Proposer une lettre
         placeholder: Lettre

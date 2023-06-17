@@ -43,7 +43,7 @@ class ProposalController extends AbstractController
         if($gameWinner){
             return new Response('User already won this game', 400);
         }
-        $proposition = $request->request->get('proposition');
+        $proposition = $request->request->get('proposal');
         if(strlen($proposition) > 0) {
             if($game->isClassic()) {
                 $points = $this->getPoints($game->getWord(), $gameParticipant->getWordStatus(), $proposition);

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\GameParticipant;
 use App\Entity\Room;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,11 @@ class GameController extends AbstractController
     #[Route('/api/room/{roomId}/game/latest', name: 'app_game_latest', methods: ['GET'])]
     public function getLatestGame(int $roomId, EntityManagerInterface $entityManager): Response
     {
+        //Check if user is logged in
+        if(!$this->getUser()){
+            return new Response('Unauthorized', 401);
+        }
+        $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
         $room = $entityManager->getRepository(Room::class)->find($roomId);
         if(!$room){
             return new Response('Room not found', 404);
@@ -29,8 +35,39 @@ class GameController extends AbstractController
         if(!$game){
             return new Response('Game not found', 404);
         }
+        $gameParticipant = $entityManager->getRepository(GameParticipant::class)->findOneByGameAndUser($game->getId(), $user->getId());
+        if(!$gameParticipant){
+            return new Response('User not found in game', 404);
+        }
         $game->isActive();
         $json = $this->getSerializedGame($game);
+        return new Response($json, 200, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
+
+    #[Route('/api/room/{roomId}/game/latest/participant', name: 'app_game_latest_participant', methods: ['GET'])]
+    public function getLatestGameByParticipant(int $roomId, EntityManagerInterface $entityManager): Response
+    {
+        //Check if user is logged in
+        if(!$this->getUser()){
+            return new Response('Unauthorized', 401);
+        }
+        $user = $entityManager->getRepository(User::class)->findOneByUsername($this->getUser()->getUserIdentifier());
+        $room = $entityManager->getRepository(Room::class)->find($roomId);
+        if(!$room){
+            return new Response('Room not found', 404);
+        }
+        $game = $entityManager->getRepository(Game::class)->findLatestByRoom($room->getId());
+        if(!$game){
+            return new Response('Game not found', 404);
+        }
+        $gameParticipant = $entityManager->getRepository(GameParticipant::class)->findOneByGameAndUser($game->getId(), $user->getId());
+        if(!$gameParticipant){
+            return new Response('User not found in game', 404);
+        }
+        $game->isActive();
+        $json = $this->getSerializedGameParticipant($gameParticipant);
         return new Response($json, 200, [
             'Content-Type' => 'application/json'
         ]);
@@ -202,7 +239,7 @@ class GameController extends AbstractController
      */
     private function getSerializedGame(Game $game): string
     {
-        $activeGame = ['room', 'gameParticipants', 'proposals', 'word'];
+        $activeGame = ['room', 'gameParticipants', 'proposals', 'word', 'gameWinners'];
         $finishedGame = ['room', 'gameParticipants'];
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
@@ -212,6 +249,19 @@ class GameController extends AbstractController
                 return $object->getId();
             },
             'ignored_attributes' => $game->isActive() ? $activeGame : $finishedGame
+        ]);
+    }
+
+    private function getSerializedGameParticipant(GameParticipant $gameParticipant): string
+    {
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+        return $serializer->serialize($gameParticipant, 'json', [
+            'circular_reference_handler' => function ($object) {
+                return $object->getId();
+            },
+            'ignored_attributes' => ['game', 'user']
         ]);
     }
 }
