@@ -145,7 +145,18 @@ form > div:nth-child(1) > div > label {
   width: 50%;
 }
 
+.show_stats, .join-link {
+  display: block;
+}
+
+#close-stats {
+  min-height: -webkit-fill-available;
+  display: flex;
+  align-items: center;
+  place-content: center;
+}
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% for flashMessage in app.flashes('success') %}
 	<div class="snackbar active">
@@ -310,11 +321,95 @@ form > div:nth-child(1) > div > label {
             <span class="name-room">{{ room.name }}</span>
             <span class="player-joined">{{ activeCount }}/{{ room.capacity }}</span>
             
-            <span class="join border lined thick bottom-bar" onclick="goToLink(event)">
-              <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+            <span class="join border lined thick bottom-bar">
+              {% if is_logged_in %}
+                {% if room in roomsFinished %}
+                  {% for roomfinished in roomsFinished %}
+                    {% if room == roomfinished %}
+                      {% if room.gameCount() == 1 %}
+                        <a class="show_stats" href="{{ urlStats[loop.index - 1] }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>  
+                      {% else %}
+                        <a class="show_stats" href="">{{ 'home.table.game.show_stats'|trans|raw }}</a>
+                      {% endif %}
+                    {% else %}
+                      <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+                    {% endif %}
+                  {% endfor %}
+                  {% else %}
+                    <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+                  {% endif %}
+              {% else %}
+                <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+              {% endif %}
             </span>
           </li>
         {% endfor %}
+
+        <div id="stats-modal" class="modal">
+          <div class="modal-content">
+            
+          </div>
+
+          <div class="modal-actions">
+            <div id="close-stats" class="modal-action-close">Close</div>
+          </div>
+        </div>
+
+        <script>
+          $(document).ready(function() {
+            $('a.show_stats').click(function(e) {
+              e.preventDefault();
+
+              const url = $(this).attr('href');
+
+              $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                  updateModalWithData(data);
+                },
+                error: function(xhr, status, error) {
+                  console.log(error);
+                }
+              });
+            });
+
+            function updateModalWithData(data) {
+              // get the modal by id
+              const modal = document.getElementById('stats-modal');
+              // get the modal content
+              const modalContent = modal.querySelector('#stats-modal .modal-content');
+              console.log(modalContent);
+              // get the close button
+              const closeButton = modal.querySelector('.modal-action-close');
+              // insert data into the modal content
+              modalContent.innerHTML = 
+              "<h2>Statistiques de la partie</h2>" +
+              "<p>Pourcentage moyen de réussite: " + data.averageLoseWin*100 + "%</p>" +
+              "<p>Meilleur joueur : " + data.bestPlayer + "</p>" +
+              "<p>Tentatives moyennes : " + data.averageProposalsPerParticipant + "</p>"
+              ;
+              // show the modal
+              modal.style.opacity = '1';
+              modal.classList.add('active');
+            }
+
+            function hideModal() {
+              const modal = document.querySelector('.modal');
+
+              modal.style.opacity = '0';
+              setTimeout(function() {
+                modal.classList.remove('active');
+                modal.classList.remove("disabled-action");
+              }, 1000);
+            }
+
+            const closeButton = document.querySelector('#stats-modal .modal-action-close');
+            closeButton.addEventListener('click', hideModal);
+
+          });
+        </script>
       </ul>
     </div>
   </div>
@@ -345,10 +440,4 @@ form > div:nth-child(1) > div > label {
 
 {% block javascripts %}
   {{ parent() }}
-  <script>
-    function goToLink(event) {
-      const joinLink = event.currentTarget.querySelector('.join-link');
-      window.location.href = joinLink.href;
-    }
-  </script>
 {% endblock %}

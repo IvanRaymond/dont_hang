@@ -14,6 +14,7 @@ home:
       player_joined: Player joined
       create_party: Create a party
       join: Join
+      show_stats: Show stats
     ranking:
       title: Ranking
       name: Name

@@ -14,6 +14,7 @@ home:
       player_joined: Joueur rejoint
       create_party: Créer une partie
       join: Rejoindre
+      show_stats: Voir les statistiques
     ranking:
       title: Classement
       name: Nom
