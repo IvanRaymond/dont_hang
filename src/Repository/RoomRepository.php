@@ -52,4 +52,27 @@ class RoomRepository extends ServiceEntityRepository
             return null;
         }
     }
+
+    /**
+     * return rooms which is finished
+     */
+    public function findRoomsByCapacityAndUser($user_id)
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->innerJoin('r.roomParticipants', 'rp')
+            ->leftJoin('r.games', 'g')
+            ->leftJoin('g.gameParticipants', 'gp')
+            ->leftJoin('g.gameWinners', 'gw', 'WITH', 'gw.game = g AND gw.user = gp.user')
+            ->where($qb->expr()->eq('r.game_count', 1))
+            ->andWhere($qb->expr()->eq('rp.user', ':user_id'))
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->lt('gp.attempts', 7),
+                    $qb->expr()->isNotNull('gw.id')
+                )
+            )
+            ->setParameter('user_id', $user_id);
+
+        return $qb->getQuery()->getResult();
+    }
 }
