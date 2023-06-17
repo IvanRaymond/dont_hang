@@ -113,7 +113,7 @@ class GameController extends AbstractController
         return new Response('Game created', 200);
     }
 
-    #[Route('/api/room/{roomId}/game/end', name: 'app_game_end')]
+    #[Route('/api/room/{roomId}/game/end', name: 'app_game_end', methods: ['POST'])]
     public function endGame(int $roomId, EntityManagerInterface $entityManager): Response
     {
         // Check if there is already a game active
