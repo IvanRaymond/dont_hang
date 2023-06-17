@@ -133,12 +133,42 @@ form > div:nth-child(1) > div > label {
   align-self: center;
 }
 
+#content > div > div:nth-child(1) > h2 > div.modal.active > div > form > div:nth-child(2) > div > label {
+  flex: 1;
+}
+
 
 .modal .modal-actions {
   width: 50%;
 }
 
 </style>
+
+{% for flashMessage in app.flashes('success') %}
+	<div class="snackbar active">
+		<div class="snackbar-content">
+			{{ flashMessage }}
+		</div>
+		<div class="snackbar-actions">
+			<div class="snackbar-action-close">Close</div>
+		</div>
+	</div>
+
+	<script>
+		const closeButton = document.querySelector('.snackbar-action-close');
+
+		function hideSnackbar() {
+			const snackbar = document.querySelector('.snackbar');
+			snackbar.style.opacity = '0';
+			setTimeout(function() {
+				snackbar.classList.remove('active');
+			}, 1000);
+		}
+		closeButton.addEventListener('click', hideSnackbar);
+
+		setTimeout(hideSnackbar, 15000);
+	</script>
+{% endfor %}
 
 <div class="container-flex">
   <div class="container-item">
@@ -206,46 +236,53 @@ form > div:nth-child(1) > div > label {
 
 
            {{ form_start(createGameForm) }}
-        <div class="form-row">
-            {{ form_row(createGameForm.word, {
-              attr: { 
-                'class': 'word-row border lined thick'
-              }}
-            )}}
-        </div>
-
-        <div class="form-row">
-            {{ form_row(createGameForm.duration, 
-              { 'attr': { 
-                'class': 'duration-row border lined thick'
-              }}
-            )}}
-        </div>
-
-        <div class="form-row">
-            {{ form_row(createGameForm.isClassic, {
-                label: 'Classic mode',
-                attr: {
-                  'class': 'isClassic-row border lined thick'
-                }
-            }) }}
-        </div>
-        <div class="valid-createparty-row border lined thick">
-          <button type="submit" class="valid-createparty-btn">{{ 'home.table.game.create_party'|trans|raw }}</button>
-        </div>
-
-        <script>
-          const divValidCreateparty = document.querySelector('.valid-createparty-row');
-          const buttonSubmitCreateparty= document.querySelector('.valid-createparty-btn');
-
-          divValidCreateparty.addEventListener('click', function() {
-            buttonSubmitCreateparty.click();
-          });
-        </script>
-      {{ form_end(createGameForm) }}
-            <div class="modal-actions">
-              <div id="close" class="modal-action-close">Close</div>
+              <div class="form-row">
+                {{ form_row(createGameForm.name, {
+                  attr: { 
+                    'class': 'name-row border lined thick'
+                  }}
+                )}}
             </div>
+
+            <div class="form-row">
+                {{ form_row(createGameForm.word, {
+                  attr: { 
+                    'class': 'word-row border lined thick'
+                  }}
+                )}}
+            </div>
+
+            <div class="form-row">
+                {{ form_row(createGameForm.duration, 
+                  { 'attr': { 
+                    'class': 'duration-row border lined thick'
+                  }}
+                )}}
+            </div>
+
+            <div class="form-row">
+                {{ form_row(createGameForm.isClassic, {
+                    label: 'Classic mode',
+                    attr: {
+                      'class': 'isClassic-row border lined thick'
+                    }
+                }) }}
+            </div>
+            <div class="valid-createparty-row border lined thick">
+              <button type="submit" class="valid-createparty-btn">{{ 'home.table.game.create_party'|trans|raw }}</button>
+            </div>
+
+            <script>
+              const divValidCreateparty = document.querySelector('.valid-createparty-row');
+              const buttonSubmitCreateparty= document.querySelector('.valid-createparty-btn');
+
+              divValidCreateparty.addEventListener('click', function() {
+                buttonSubmitCreateparty.click();
+              });
+            </script>
+          {{ form_end(createGameForm) }}
+          <div class="modal-actions">
+            <div id="close" class="modal-action-close">Close</div>
           </div>
         </div>
       {% endif %}
@@ -276,7 +313,6 @@ form > div:nth-child(1) > div > label {
           </li>
         {% endfor %}
       </ul>
-    
     </div>
   </div>
   <div class="container-item">
