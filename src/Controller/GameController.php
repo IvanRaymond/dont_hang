@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class GameController extends AbstractController
 {
-    #[Route('/room/{roomId}/game/latest', name: 'app_game_latest')]
+    #[Route('/api/room/{roomId}/game/latest', name: 'app_game_latest', methods: ['GET'])]
     public function getLatestGame(int $roomId, EntityManagerInterface $entityManager): Response
     {
         $room = $entityManager->getRepository(Room::class)->find($roomId);
@@ -36,7 +36,7 @@ class GameController extends AbstractController
         ]);
     }
 
-    #[Route('/room/{roomId}/game/data/{gameId}', name: 'app_game')]
+    #[Route('/api/room/{roomId}/game/data/{gameId}', name: 'app_game', methods: ['GET'])]
     public function getGame(int $roomId, int $gameId, EntityManagerInterface $entityManager): Response
     {
         $game = $entityManager->getRepository(Game::class)->findOneByRoomAndGame($roomId, $gameId);
@@ -46,7 +46,7 @@ class GameController extends AbstractController
         ]);
     }
 
-    #[Route('/room/{roomId}/game/create', name: 'app_game_create')]
+    #[Route('/api/room/{roomId}/game/create', name: 'app_game_create', methods: ['POST'])]
     public function startGame(Request $request, int $roomId, EntityManagerInterface $entityManager, HubInterface $hub): Response
     {
         // Check if there is already a game active
@@ -59,10 +59,10 @@ class GameController extends AbstractController
             return new Response('Game already active', 400);
         }
         // Check request for game duration, word
-        $duration = $request->query->get('duration');
-        $word = $request->query->get('word');
-        $init = $request->query->get('init');
-        $classic = $request->query->get('classic');
+        $duration = $request->request->get('duration');
+        $word = $request->request->get('word');
+        $init = $request->request->get('word_initial_state');
+        $classic = $request->request->get('mode');
         if(!$duration || !$word || !$init){
             return new Response('Missing parameters', 400);
         }
@@ -113,7 +113,7 @@ class GameController extends AbstractController
         return new Response('Game created', 200);
     }
 
-    #[Route('/room/{roomId}/game/end', name: 'app_game_end')]
+    #[Route('/api/room/{roomId}/game/end', name: 'app_game_end')]
     public function endGame(int $roomId, EntityManagerInterface $entityManager): Response
     {
         // Check if there is already a game active

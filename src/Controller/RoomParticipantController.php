@@ -96,7 +96,7 @@ class RoomParticipantController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    #[Route('/room/{id}/kick/{user_id}', name: 'app_kick_room')]
+    #[Route('/api/room/{id}/kick/{user_id}', name: 'app_kick_room', methods: ['POST'])]
     public function kickParticipant(Request $request, EntityManagerInterface $entityManager, int $id, int $user_id, HubInterface $hub): Response
     {
         if (!$this->getUser()) {
