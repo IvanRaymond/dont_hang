@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\BaseController;
 use App\Entity\Room;
 use App\Entity\RoomParticipant;
 use App\Entity\User;
