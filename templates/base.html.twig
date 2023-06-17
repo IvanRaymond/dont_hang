@@ -28,8 +28,8 @@
     </div>
     {% if not is_logged_in %}
       <div class="navbar-right">
-        <a class="nav-link border lined thick" href="/login">CONNEXION</a>
-        <a class="nav-link border lined thick" href="/register">S'ENREGISTRER</a>
+        <a class="nav-link border lined thick" href="/login">{{ 'nav.menu.login'|trans|raw }}</a>
+        <a class="nav-link border lined thick" href="/register">{{ 'nav.menu.register'|trans|raw }}</a>
     {% else %}
         <div class="navbar-right logged">
           <div class="user-icon" onclick="openMenu();">
