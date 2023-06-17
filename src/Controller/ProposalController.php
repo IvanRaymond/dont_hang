@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProposalController extends AbstractController
 {
-    #[Route('/room/{roomId}/game/proposal', name: 'app_proposal_make')]
+    #[Route('/api/room/{roomId}/game/proposal', name: 'app_proposal_make', methods: ['POST'])]
     public function create(int $roomId, Request $request, EntityManagerInterface $entityManager): Response
     {
         //Check if user is logged in
@@ -43,7 +43,7 @@ class ProposalController extends AbstractController
         if($gameWinner){
             return new Response('User already won this game', 400);
         }
-        $proposition = $request->query->get('proposition');
+        $proposition = $request->request->get('proposal');
         if(strlen($proposition) > 0) {
             if($game->isClassic()) {
                 $points = $this->getPoints($game->getWord(), $gameParticipant->getWordStatus(), $proposition);
@@ -66,6 +66,7 @@ class ProposalController extends AbstractController
             $entityManager->persist($proposal);
             $entityManager->flush();
             if($game->isClassic()) {
+                $points = ($gameParticipant->getPoints() / $gameParticipant->getAttempts()) * 10;
                 $is_won = $this->singlePlayerProcedure($game, $user, $gameParticipant->getPoints(), $gameParticipant, $entityManager);
             } else {
                 $is_won = $this->multiPlayerProcedure($game, $user, $gameParticipant->getPoints(), $proposition, $entityManager);
