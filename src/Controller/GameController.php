@@ -109,10 +109,10 @@ class GameController extends AbstractController
         // get best player with most points
         $maxPoints = 0;
         $bestPlayer = null;
-
+  
         foreach ($gameWinners as $winner) {
             $points = $winner->getPoints();
-
+        
             if ($points > $maxPoints) {
                 $maxPoints = $points;
                 $bestPlayer = $winner->getUser();
