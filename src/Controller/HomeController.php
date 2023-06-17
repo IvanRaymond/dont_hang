@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Game;
+use App\Entity\User;
 use App\Entity\Room;
 use App\Entity\GameParticipant;
 use App\Entity\GameWinner;
@@ -126,6 +127,10 @@ class HomeController extends BaseController
             }
         }
 
+        // get all user ranks
+        $userRepository = $entityManager->getRepository(User::class);
+        $ranks = $userRepository->getAllRank();
+
         $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
         return $this->render('home/index.html.twig', [
             'is_logged_in' => $isLogged,
@@ -135,6 +140,7 @@ class HomeController extends BaseController
             'rooms' => $rooms,
             'roomsFinished' => $roomsFinished,
             'urlStats' => $urlStats,
+            'ranks' => $ranks,
             'createGameForm' => $form->createView(),
         ]);
     }

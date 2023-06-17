@@ -57,6 +57,12 @@ li>span{
   flex: 0.5;
 }
 
+.icon-profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
 .game-won-lost {
   flex: 2;
 }
@@ -154,6 +160,11 @@ form > div:nth-child(1) > div > label {
   display: flex;
   align-items: center;
   place-content: center;
+}
+
+.ranking-tab-item {
+  align-items: center;
+  text-align: center;
 }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -421,17 +432,23 @@ form > div:nth-child(1) > div > label {
         <li class="ranking-tab-item">
           <span class="icon-profile"></span>
           <span class="name-player">{{ 'home.table.ranking.name'|trans|raw }}</span>
-          <span class="game-won-lost">{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</span>
+          <span class="game-won-lost">{{ 'home.table.ranking.games_lost'|trans|raw }}/{{ 'home.table.ranking.games_won'|trans|raw }}</span>
           <span class="score-player">{{ 'home.table.ranking.score'|trans|raw }}</span>
         </li>
-        {# {% for rank in ranks %} #}
-          {# <li class="ranking-tab-item">
-            <span class="icon-profile">{{ rank.profile }}</span>
-            <span class="name-player">{{ rank.name }}</span>
-            <span class="game-won-lost">{{ rank.win }}/{{ rank.lose }}</span>
+        {% for rank in ranks %}
+          <li class="ranking-tab-item">
+            <span class="icon-profile">
+              {% if rank.picture == null %}
+                <img class="avatar-icon" src="{{ asset('assets/users/default-icon.png') }}" alt="User icon"/>
+              {% else %}
+                <img src="{{ asset('assets/users/' ~ rank.picture) }}" alt="img profile">
+              {% endif %}
+            </span>
+            <span class="name-player">{{ rank.username }}</span>
+            <span class="game-won-lost">{{ rank.gameCount }}/{{ rank.gamesWon }}</span>
             <span class="score-player">{{ rank.points }}</span>
-          </li> #}
-          {# {% endfor %} #}
+          </li>
+          {% endfor %}
       </ul>
     </div>
   </div> 
