@@ -46,6 +46,66 @@ class GameController extends AbstractController
         ]);
     }
 
+    /**
+     * Returns statistics for a given game
+     */
+    #[Route('/room/{roomId}/game/stats/{gameId}', name: 'app_game_stats')]
+    public function getStatistiques(int $roomId, int $gameId, EntityManagerInterface $entityManager): Response {
+        // retrieve room
+        $room = $entityManager->getRepository(Room::class)->find($roomId);
+
+        // retrieve game
+        $game = $entityManager->getRepository(Game::class)->find($gameId);
+
+        // retrieve game participants
+        $gameParticipants = $game->getGameParticipants();
+
+        // retrieve game winners
+        $gameWinners = $game->getGameWinners();
+
+        // calculate average lose/win participants
+        $totalParticipants = count($gameParticipants);
+        $totalWinners = count($gameWinners);
+
+        $averageLoseWin = ($totalWinners === 0) ? 0 : ($totalParticipants / $totalWinners);
+
+        // get best player with most points
+        $maxPoints = 0;
+        $bestPlayer = null;
+        
+        foreach ($gameWinners as $winner) {
+            $points = $winner->getPoints();
+        
+            if ($points > $maxPoints) {
+                $maxPoints = $points;
+                $bestPlayer = $winner->getUser();
+            }
+        }
+        if ($bestPlayer !== null) {
+            $bestPlayer = $bestPlayer->getUsername();
+        }
+
+        // retrieve game proposals of all participants
+        $proposals = $game->getProposals();
+
+        // calculate average proposals per participant
+        $totalProposals = count($proposals);
+        $averageProposalsPerParticipant = ($totalParticipants === 0) ? 0 : ($totalProposals / $totalParticipants);
+
+        // build response data
+        $data = [
+            'averageLoseWin' => $averageLoseWin,
+            'bestPlayer' => $bestPlayer,
+            'averageProposalsPerParticipant' => $averageProposalsPerParticipant,
+        ];
+
+        $json = json_encode($data);
+
+        return new Response($json, 200, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
+
     #[Route('/room/{roomId}/game/create', name: 'app_game_create')]
     public function startGame(Request $request, int $roomId, EntityManagerInterface $entityManager, HubInterface $hub): Response
     {
