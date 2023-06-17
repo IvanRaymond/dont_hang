@@ -225,7 +225,7 @@ body {
   display: flex;
   position: fixed;
   left: 50%;
-  top: 30%;
+  top: 20%;
   transform: translateX(-50%);
   background-color: rgb(54, 54, 54);
   padding: 10px;
