@@ -12,6 +12,7 @@ home:
       name: Nom
       player_count: Nombre de joueurs
       player_joined: Joueur rejoint
+      create_party: Créer une partie
       join: Rejoindre
     ranking:
       title: Classement
