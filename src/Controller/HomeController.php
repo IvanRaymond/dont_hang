@@ -72,16 +72,16 @@ class HomeController extends BaseController
                 $httpHost = rtrim($_SERVER['HTTP_HOST'], '/');
                 $url = 'http://' . $httpHost;
                 $url .= $this->generateUrl('app_game_create', ['roomId' => $roomId]);
+
                 $response = $httpClient->request('POST', $url, [
                     'json' => $data,
                 ]);
 
-                if ($response->getStatusCode() == 200) {
+                $statusCode = $response->getStatusCode();
+                if ($statusCode == 200) {
                     $this->addFlash('success', 'Ajout d\'une partie réussi.');
                 } else {
-                    $statusCode = $response->getStatusCode();
-                    $errorMessage = $response->getContent();
-                    $this->addFlash('success', $statusCode . $errorMessage);
+                    $this->addFlash('success', 'Erreur: ' . $statusCode);
                 }
             } else {
                 $this->addFlash('success', 'Room id introuvable');
