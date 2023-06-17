@@ -66,6 +66,7 @@ class ProposalController extends AbstractController
             $entityManager->persist($proposal);
             $entityManager->flush();
             if($game->isClassic()) {
+                $points = ($gameParticipant->getPoints() / $gameParticipant->getAttempts()) * 10;
                 $is_won = $this->singlePlayerProcedure($game, $user, $gameParticipant->getPoints(), $gameParticipant, $entityManager);
             } else {
                 $is_won = $this->multiPlayerProcedure($game, $user, $gameParticipant->getPoints(), $proposition, $entityManager);
