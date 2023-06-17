@@ -163,7 +163,9 @@
         {% endif %}
       </div>
         {{ form_start(photoForm) }}
-        <a id="modify-photo-link">Modifier votre photo de profil</a>
+        <a id="modify-photo-link">
+          {{ 'account.update.update_photo'|trans|raw }}
+        </a>
 
         {{ form_widget(photoForm.picture, { 'attr': {'class': 'hidden'}}) }}
         
@@ -191,7 +193,8 @@
       </div>
 
       <div class="valid-edit-row border lined thick">
-        <button class="valid-edit-btn" type="submit">Modifier</button>
+        <button class="valid-edit-btn" type="submit">
+          {{ 'account.update.modify'|trans|raw }}</button>
       </div>
 
       <script>

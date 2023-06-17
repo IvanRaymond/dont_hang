@@ -132,6 +132,7 @@ class HomeController extends BaseController
         $ranks = $userRepository->getAllRank();
 
         $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
+
         return $this->render('home/index.html.twig', [
             'is_logged_in' => $isLogged,
             'is_admin' => $isAdmin,

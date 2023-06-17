@@ -83,4 +83,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $query->getResult();
     }
+
+    public function getHistory($userId)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery('
+            SELECT g.finished_at AS gameDate, g.duration AS duration, gw.id AS result, g.word AS word, gp.points AS points
+            FROM App\Entity\GameParticipant gp
+            JOIN gp.game g
+            LEFT JOIN App\Entity\GameWinner gw WITH gw.game = g AND gw.user = :userId
+            WHERE gp.user = :userId
+            AND (gw.id IS NOT NULL OR gw.id IS NULL)
+            ORDER BY g.finished_at DESC
+        ');
+
+        $query->setParameter('userId', $userId);
+
+        return $query->getResult();
+    }
 }

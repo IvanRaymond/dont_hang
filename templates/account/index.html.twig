@@ -101,7 +101,9 @@
             <div class="container-item-information-player">
                 <p>{{ name }}</p>
                 <p>{{ email }}</p>
-                <a href="/account/edit"> Modifier vos informations</a>
+                <a href="/account/edit"> 
+									{{ 'account.update.title'|trans|raw }}
+								</a>
             </div>
         </div>
         <div class="user-stats">
@@ -150,73 +152,41 @@
         </div>
     </div>
     <div class="container-item">
-        <h2>Historique des parties</h2>
+        <h2>{{ 'account.table.history.title'|trans|raw }}</h2>
         <div class="history-games">
             <ul class="border lined thick">
-    					{# {% for partie in parties %} #}
-									<li class="bottom-bar">
-						      {# <li class="{{ loop.last ? '' : 'bottom-bar' }}"> #}
-										{# <div class="content {{ partie.resultat == 'perdant' ? 'lose-background' : 'win-background' }}"> #}
-											<div class="content win-background">
-												<div class="game-content">
-													<div class="game">
-														<div class="timestamp">
-															<span>25-12-2000</span>
-															{# <span>{{ partie.date }}</span> #}
-															<span>|</span>
-															<span class="length">4:10</span>
-															{# <span class="length">{{ partie.length }}</span> #}
-														</div>
-														<div class="bar">
-														</div>
-														<div class="result">
-															Victoire
-															{# <span>{{ partie.resultat }}</span> #}
-														</div>
+    					{% for partie in parties %}
+						      <li class="{{ loop.last ? '' : 'bottom-bar' }}">
+										<div class="content {{ partie.result == 'perdant' ? 'lose-background' : 'win-background' }}">
+											<div class="game-content">
+												<div class="game">
+													<div class="timestamp">
+														{{ partie.gameDate|date('d-m-Y') }}
+														<span>|</span>
+														<span class="length">{{ partie.duration }}</span>
 													</div>
-													<div class="word">
-														Le mot était : poufsouffle
-														{# Le mot était : <span>{{ partie.mot }}</span> #}
+													<div class="bar">
 													</div>
-													<div class="points">
-														95 pts
-														{# <span>{{ item.nombre_de_points }}</span> pts #}
+													<div class="result">
+														<span>
+														{% if partie.result is not null %}
+															{{ 'account.table.history.victory'|trans|raw }}
+														{% else %}
+															{{ 'account.table.history.defeat'|trans|raw }}
+														{% endif %}
+														</span>
 													</div>
-												</div>
-											</div>
-										{# </div> #}
-									</li>
-									<li>
-										{# <div class="content {{ partie.resultat == 'perdant' ? 'lose-background' : 'win-background' }}"> #}
-											<div class="content win-background">
-												<div class="game-content">
-													<div class="game">
-														<div class="timestamp">
-															<span>25-12-2000</span>
-															{# <span>{{ partie.date }}</span> #}
-															<span>|</span>
-															<span class="length">4:10</span> 
-															{# <span class="length">{{ partie.length }}</span> #}
-														</div>
-														<div class="bar">
-														</div>
-														<div class="result">
-															Victoire
-															{# <span>{{ partie.resultat }}</span> #}
-														</div>
 												</div>
 												<div class="word">
-													Le mot était : poufsouffle
-													{# Le mot était : <span>{{ partie.mot }}</span> #}
+													{{ 'account.table.history.result_sentence'|trans|raw }} : <span>{{ partie.word }}</span>
 												</div>
 												<div class="points">
-													95 pts
-													{# <span>{{ item.nombre_de_points }}</span> pts #}
+													<span>{{ partie.points }}</span> pts
 												</div>
 											</div>
-										{# </div> #}
+										</div>
 									</li>
-								{# {% endfor %} #}
+								{% endfor %}
             </ul>
         </div>
     </div>

@@ -86,6 +86,7 @@ account:
     username: Username
   update:
     title: Update Information
+    update_photo: Update profile picture
     email:
         title: Email
         placeholder: Enter your email
@@ -95,6 +96,7 @@ account:
     password_confirmation:
         title: Password confirmation
         placeholder: Enter your password confirmation
+    modify: Modify
     button: Update
     success: Your information has been updated
     error: An error has occurred
@@ -104,4 +106,8 @@ account:
       name: Name
       score: Score
       status: Status
+      result_sentence: The word was 
+      victory: Victory
+      defeat: Defeat
+
 
