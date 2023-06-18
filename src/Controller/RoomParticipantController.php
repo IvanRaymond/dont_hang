@@ -56,6 +56,7 @@ class RoomParticipantController extends AbstractController
                 $game_participant = new GameParticipant();
                 $game_participant->setUser($user);
                 $game_participant->setGame($game);
+                $game_participant->setWordStatus($game->getWordStatus());
                 $entityManager->persist($game_participant);
                 $entityManager->flush();
             }

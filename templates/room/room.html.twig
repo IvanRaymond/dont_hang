@@ -72,6 +72,23 @@
       transform: rotate(-5deg);
     }
 
+    .display-result {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .attempts {
+      padding-right: 10px;
+    }
+
+    .back-home {
+      display: none;
+    }
+
+    .back-home.active {
+      display: block;
+    }
+
   </style>
 
   <div class="container-flex">
@@ -94,6 +111,16 @@
       </ul>
     </div>
     <div class="container-item game">
+      <div class="display-result">
+        <p>
+          Attempts :
+          <span class="attempts">0</span>/7
+        </p>
+        <p>
+          Score :
+          <span class="score">0</span>
+        </p>
+      </div>
       <div class="pendu">
         <img src="{{ asset('assets/hang/hang.png') }}" alt="PT icon">
         {# <img src="{{ hang }}" alt="hang icon"> #}
@@ -101,42 +128,41 @@
       </div>
 
       <div class="word">
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-
-        <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
-        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
-        <img src="{{ asset('assets/letters/C.png')}}" alt="letter C">
-        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
-
-
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-
-        <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
-        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
-        <img src="{{ asset('assets/letters/C.png')}}" alt="letter C">
-        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
-
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-
-        <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
-        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
-        <img src="{{ asset('assets/letters/C.png')}}" alt="letter C">
-        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
-
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
-      
-        {# {% for letter in letters %} #}
+        {% if wordStatus is defined %}
+          {% set letters = wordStatus|split('') %}
+          {% for letter in letters %}
+            {{ letter }}
             {# <img src="{{ asset('assets/letters/' ~ letter.letter ~ '.png') }}" alt="letter {{ letter.name }}"> #}
-        {# {% endfor %} #}
+          {% endfor %} 
+        {% endif %}
+
+        {# <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+        <img src="{{ asset('assets/letters/Unknow.png')}}" alt="letter hidden">
+
+        <img src="{{ asset('assets/letters/B.png')}}" alt="letter B">
+        <img src="{{ asset('assets/letters/A.png')}}" alt="letter A">
+        <img src="{{ asset('assets/letters/C.png')}}" alt="letter C"> #}
       </div>
 
       <div class="proposition">
         <button class="btn doodle-button">{{ 'room.popup.proposal.title'|trans|raw }}</button>
       </div>
+
+      <div class="back-to-home">
+        <a href="{{ path('app_home') }}" class="back-home btn doodle-button">Back to home</a>
+      </div>
+
+      <div id="overlay active"></div>
+      <div class="modal">
+        <div class="modal-content">
+          <input type="text" name="proposal" id="proposal" placeholder="{{ 'room.popup.proposal.title'|trans|raw }}">
+          <button class="btn btn-primary" id="send">{{ 'room.popup.proposal.letter.button'|trans|raw }}</button>
+        </div>
+        <div class="modal-actions">
+          <div id="close" class="modal-action-close">Close</div>
+        </div>
+      </div>
+
     </div>
     <div class="container-item chat">
       <h2>Chat</h2>
