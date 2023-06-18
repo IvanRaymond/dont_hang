@@ -156,11 +156,15 @@ class GameController extends AbstractController
             return new Response('Game already active', 400);
         }
         // Check request for game duration, word
-        $duration = $request->request->get('duration');
-        $word = $request->request->get('word');
-        $init = $request->request->get('word_initial_state');
-        $classic = $request->request->get('mode');
-        if(!$duration || !$word || !$init){
+        $jsonData = $request->getContent();
+        $data = json_decode($jsonData, true);
+        
+        $word = $data['word'] ?? null;
+        $duration = $data['duration'] ?? null;
+        $init = $data['word_initial_state'] ?? null;
+        $classic = $data['mode'] ?? null;
+
+        if($duration === null || $word === null || $init === null){
             return new Response('Missing parameters', 400);
         }
         // Create game
