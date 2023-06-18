@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Proposal;
 use App\Controller\BaseController;
 use App\Form\UserPhotoType;
 use App\Form\UserFormType;
@@ -27,6 +28,12 @@ class AccountController extends BaseController
         $userRepository = $entityManager->getRepository(User::class);
         $parties = $userRepository->getHistory($user->getId());
 
+        // get proposalRepository
+        $proposalRepository = $entityManager->getRepository(Proposal::class);
+
+        // get countGamesPlayedByDay from ProposalRepository
+        $proposals = $proposalRepository->countProposalsByUserPerDay($user->getId());
+
         return $this->render('account/index.html.twig', [
             'controller_name' => 'AccountController',
             'is_logged_in' => $isLogged,
@@ -34,6 +41,7 @@ class AccountController extends BaseController
             'email' => $this->getUser()->getEmail(),
             'avatar' => $this->getUser()->getPicture(),
             'parties' => $parties,
+            'proposals' => $proposals,
         ]);
     }
 

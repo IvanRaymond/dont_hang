@@ -28,7 +28,7 @@ class ProposalController extends AbstractController
         if(!$room){
             return new Response('Room not found', 404);
         }
-        if($room->getOwner() === $user){
+        if($user->isMaster()){
             return new Response('Game master cannot participate in game', 400);
         }
         $game = $entityManager->getRepository(Game::class)->findLatestByRoom($roomId);

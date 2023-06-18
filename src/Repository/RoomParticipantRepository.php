@@ -88,4 +88,20 @@ class RoomParticipantRepository extends ServiceEntityRepository
             return null;
         }
     }
+
+    public function findParticipantsByRoomId($roomId)
+    {
+        try {
+            return $this->createQueryBuilder('rp')
+                    ->select('rp', 'u.username', 'u.picture')
+                    ->leftJoin('rp.user', 'u')
+                    ->andWhere('rp.room = :roomId')
+                    ->setParameter('roomId', $roomId)
+                    ->getQuery()
+                    ->getResult();
+        } catch (NoResultException | NonUniqueResultException $e) {
+            return null;
+        }
+    }
+
 }

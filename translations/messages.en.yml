@@ -109,5 +109,7 @@ account:
       result_sentence: The word was 
       victory: Victory
       defeat: Defeat
+    graphs:
+      title: Number of games played per day
 
 

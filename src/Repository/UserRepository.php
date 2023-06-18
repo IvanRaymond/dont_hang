@@ -73,7 +73,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getAllRank()
     {
         $query = $this->getEntityManager()->createQuery('
-            SELECT u.id, u.username, u.picture, SUM(gp.points) AS points, COUNT(gp.id) AS gameCount, COUNT(gw.id) AS gamesWon
+            SELECT u.id, u.username, u.picture, SUM(DISTINCT gp.points) AS points, COUNT(DISTINCT gp.id) AS gameCount, COUNT(DISTINCT gw.id) AS gamesWon
             FROM App\Entity\User u
             LEFT JOIN App\Entity\GameParticipant gp WITH gp.user = u
             LEFT JOIN App\Entity\GameWinner gw WITH gw.user = u

@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Room;
+use App\Entity\Game;
+use App\Entity\GameParticipant;
 use App\Entity\RoomParticipant;
 use App\Entity\User;
 use App\Form\RoomFormType;
@@ -74,6 +76,7 @@ class RoomController extends BaseController
             }
             // Check if user is a room_participant and try to add him if not
             $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user->getId());
+            $wordStatus = 'shibouya';
             if (!$room_participant) {
                 // if the room is not password protected add user
                 if (!$room->isPrivate()) {
@@ -83,10 +86,29 @@ class RoomController extends BaseController
                 }
             }
 
+            // get word status
+            $game = $entityManager->getRepository(Game::class)->findLatestByRoom($room->getId());
+
+            if ($game) {
+                $game_participant = $entityManager->getRepository(GameParticipant::class)->findOneByGameAndUser($game->getId(), $user->getId());
+                if ($game_participant) {
+                    $wordStatus = $game_participant->getWordStatus();
+                } else {
+                    $wordStatus = '';
+                }
+            } else {
+                $wordStatus = '';
+            }
+            
+            // get all user in the room from RoomParticipantRepository findParticipantsByRoomId
+            $participants = $entityManager->getRepository(RoomParticipant::class)->findParticipantsByRoomId($id);
+
             return $this->render('room/room.html.twig', [
                 'is_logged_in' => $isLogged,
                 'avatar' => $avatar,
                 'room' => $room,
+                'wordStatus' => $wordStatus,
+                'participants' => $participants,
             ]);
         } else {
             return $this->redirectToRoute('app_home');

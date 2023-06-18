@@ -201,7 +201,7 @@ class Game
      */
     public function getGameParticipants(): Collection
     {
-        return $this->proposals;
+        return $this->gameParticipants;
     }
 
     public function addGameParticipant(GameParticipant $gameParticipant): self

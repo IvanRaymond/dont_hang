@@ -334,17 +334,21 @@ form > div:nth-child(1) > div > label {
             
             <span class="join border lined thick bottom-bar">
               {% if is_logged_in %}
-                {% if room in roomsFinished %}
-                  {% for roomfinished in roomsFinished %}
-                    {% if room == roomfinished %}
-                      {% if room.gameCount() == 1 %}
-                        <a class="show_stats" href="{{ urlStats[loop.index - 1] }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>  
+                {% if not is_admin %}
+                  {% if room in roomsFinished %}
+                    {% for roomfinished in roomsFinished %}
+                      {% if room == roomfinished %}
+                        {% if room.gameCount() == 1 %}
+                          <a class="show_stats" href="{{ urlStats[loop.index - 1] }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>  
+                        {% endif %}
                       {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
                   {% else %}
                     <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
                   {% endif %}
+                {% else %}
+                  <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>
+                {% endif %}
               {% else %}
                 <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
               {% endif %}
@@ -428,7 +432,7 @@ form > div:nth-child(1) > div > label {
         <li class="ranking-tab-item">
           <span class="icon-profile"></span>
           <span class="name-player">{{ 'home.table.ranking.name'|trans|raw }}</span>
-          <span class="game-won-lost">{{ 'home.table.ranking.games_lost'|trans|raw }}/{{ 'home.table.ranking.games_won'|trans|raw }}</span>
+          <span class="game-won-lost">{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</span>
           <span class="score-player">{{ 'home.table.ranking.score'|trans|raw }}</span>
         </li>
         {% for rank in ranks %}
@@ -441,7 +445,7 @@ form > div:nth-child(1) > div > label {
               {% endif %}
             </span>
             <span class="name-player">{{ rank.username }}</span>
-            <span class="game-won-lost">{{ rank.gameCount }}/{{ rank.gamesWon }}</span>
+            <span class="game-won-lost">{{ rank.gamesWon }}/{{ rank.gameCount - rank.gamesWon }}</span>
             <span class="score-player">{{ rank.points }}</span>
           </li>
           {% endfor %}
