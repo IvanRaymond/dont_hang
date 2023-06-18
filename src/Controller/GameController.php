@@ -133,9 +133,9 @@ class GameController extends AbstractController
 
         // build response data
         $data = [
-            'averageLoseWin' => $averageLoseWin,
+            'averageLoseWin' => round($averageLoseWin, 2),
             'bestPlayer' => $bestPlayer,
-            'averageProposalsPerParticipant' => $averageProposalsPerParticipant,
+            'averageProposalsPerParticipant' => round($averageProposalsPerParticipant, 2),
         ];
 
         $json = json_encode($data);

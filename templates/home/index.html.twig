@@ -334,17 +334,21 @@ form > div:nth-child(1) > div > label {
             
             <span class="join border lined thick bottom-bar">
               {% if is_logged_in %}
-                {% if room in roomsFinished %}
-                  {% for roomfinished in roomsFinished %}
-                    {% if room == roomfinished %}
-                      {% if room.gameCount() == 1 %}
-                        <a class="show_stats" href="{{ urlStats[loop.index - 1] }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>  
+                {% if not is_admin %}
+                  {% if room in roomsFinished %}
+                    {% for roomfinished in roomsFinished %}
+                      {% if room == roomfinished %}
+                        {% if room.gameCount() == 1 %}
+                          <a class="show_stats" href="{{ urlStats[loop.index - 1] }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>  
+                        {% endif %}
                       {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
                   {% else %}
                     <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
                   {% endif %}
+                {% else %}
+                  <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>
+                {% endif %}
               {% else %}
                 <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
               {% endif %}

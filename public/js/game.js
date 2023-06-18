@@ -170,19 +170,30 @@ let turn = false;
 
       // if lives === 7 call game over
       if (livesStatus >= 7) {
+          changeImagePendu('lose');
           gameOver();
-      }
+      } else
 
       // if won call game won
       // if wordStatusSPlit doesnt contain _ call game won
       if (!wordStatusSplit.includes('_')) {
+          changeImagePendu('win')
           gameWon();
+      } else {
+        changeImagePendu(livesStatus)
       }
+
     } catch (error) {
       console.log('error', error);
     }
 
       // Refresh game elements
+  }
+
+  function changeImagePendu(lives) {
+    // get image pendu
+    const imagePendu = document.querySelector('.image-pendu');
+    imagePendu.setAttribute('src', '/assets/hang/' + lives + '.jpg');
   }
 
   function gameOver() {
