@@ -109,4 +109,5 @@ account:
       result_sentence: Le mot était 
       victory: Victoire
       defeat: Défaite
-
+    graphs:
+      title: Nombre de parties joués par jour

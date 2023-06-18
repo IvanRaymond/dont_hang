@@ -83,4 +83,16 @@ class ProposalRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function countProposalsByUserPerDay(int $userId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('SUBSTRING(p.created_at, 1, 10) AS day', 'COUNT(p.id) AS proposalCount')
+            ->andWhere('p.user = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('day')
+            ->orderBy('day', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    
 }

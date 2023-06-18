@@ -99,12 +99,16 @@ class RoomController extends BaseController
             } else {
                 $wordStatus = '';
             }
-            // $wordStatus = '_____';
+            
+            // get all user in the room from RoomParticipantRepository findParticipantsByRoomId
+            $participants = $entityManager->getRepository(RoomParticipant::class)->findParticipantsByRoomId($id);
+
             return $this->render('room/room.html.twig', [
                 'is_logged_in' => $isLogged,
                 'avatar' => $avatar,
                 'room' => $room,
                 'wordStatus' => $wordStatus,
+                'participants' => $participants,
             ]);
         } else {
             return $this->redirectToRoute('app_home');

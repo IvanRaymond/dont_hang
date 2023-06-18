@@ -112,14 +112,23 @@
         </div>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
+								const proposals = {{ proposals|json_encode|raw }};
+
+								const label = "{{ 'account.table.graphs.title'|trans|raw }}";
+								// get all days of proposals
+								const days = proposals.map(proposal => proposal.day);
+
+								// get all number of proposals 
+								const numberProposals = proposals.map(proposal => proposal.proposalCount);
+								console.log(numberProposals);
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                    labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin'],
+                    labels: days,
                     datasets: [{
-                        label: 'Nombre de parties joués DEMO',
-                        data: [12, 19, 3, 5, 2, 3],
+                        label: label,
+                        data: numberProposals,
                         backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
