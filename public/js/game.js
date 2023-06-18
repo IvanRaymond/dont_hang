@@ -60,32 +60,36 @@ let turn = false;
    */
   function makeProposal(proposal) {
       // Show modal to ask for letter or word proposal
-      $.post({
-          url: '/api/room/' + roomId + '/game/proposal',
-          data: {
-              proposal: proposal
-          },
-          dataType: 'json'
-      }).then(function(data, status) {
-          if (status !== 'success') {
-              console.log('Error: ' + status);
-              return null;
-          } else {
-              console.log('Proposal sent');
-              if (data.isWon) {
-                  refreshGame();
-                  gameWon();
-              } else if (data.isOver) {
-                  refreshGame();
-                  gameOver();
-              } else {
-                  refreshGame();
-              }
-              
-          //     // Update animation based on the response
-          //     // Repeat until game is over
-          }
-      });
+      try {
+        $.post({
+            url: '/api/room/' + roomId + '/game/proposal',
+            data: {
+                proposal: proposal
+            },
+            dataType: 'json'
+        }).then(function(data, status) {
+            if (status !== 'success') {
+                console.log('Error: ' + status);
+                return null;
+            } else {
+                console.log('Proposal sent');
+                if (data.isWon) {
+                    refreshGame();
+                    gameWon();
+                } else if (data.isOver) {
+                    refreshGame();
+                    gameOver();
+                } else {
+                    refreshGame();
+                }
+                
+            //     // Update animation based on the response
+            //     // Repeat until game is over
+            }
+        });
+      } catch (error) {
+        console.log('error', error);
+      }
       // Update animation based on the response
       // Repeat until game is over
   }
@@ -133,6 +137,7 @@ let turn = false;
   }
 
   async function refreshGame(){
+    try {
       const json = await getClassicGameState(roomId);
       // get balise word from html
       const word = document.querySelector('.word');
@@ -173,7 +178,9 @@ let turn = false;
       if (!wordStatusSplit.includes('_')) {
           gameWon();
       }
-
+    } catch (error) {
+      console.log('error', error);
+    }
 
       // Refresh game elements
   }

@@ -32,7 +32,7 @@ class RoomParticipantController extends AbstractController
         $room_participant_count = $entityManager->getRepository(RoomParticipant::class)->getCountByRoomId($id);
         $room = $entityManager->getRepository(Room::class)->findOneById($id);
 
-        if ($room->getOwner() === $user) {
+        if ($user->isMaster()) {
             return $this->redirectToRoute('app_room', ['id' => $id]);
         }
 
@@ -44,7 +44,7 @@ class RoomParticipantController extends AbstractController
         // Check if user is not a room_participant
         $room_participant = $entityManager->getRepository(RoomParticipant::class)->findOneByRoomAndUser($id, $user->getId());
 
-        if (!$room_participant) {
+        if ($room_participant === null) {
             // add user to room_participant
             $room_participant = new RoomParticipant();
             $room_participant->setUser($user);
