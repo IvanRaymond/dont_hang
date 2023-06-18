@@ -163,6 +163,7 @@
     <div class="container-item">
         <h2>{{ 'account.table.history.title'|trans|raw }}</h2>
         <div class="history-games">
+					{% if parties is not empty %}
             <ul class="border lined thick">
     					{% for partie in parties %}
 						      <li class="{{ loop.last ? '' : 'bottom-bar' }}">
@@ -197,6 +198,7 @@
 									</li>
 								{% endfor %}
             </ul>
+					{% endif %}
         </div>
     </div>
 </div>
