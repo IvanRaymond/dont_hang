@@ -67,7 +67,7 @@ class RoomRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->eq('rp.user', ':user_id'))
             ->andWhere(
                 $qb->expr()->orX(
-                    $qb->expr()->lt('gp.attempts', 7),
+                    $qb->expr()->gt('gp.attempts', 7),
                     $qb->expr()->isNotNull('gw.id')
                 )
             )

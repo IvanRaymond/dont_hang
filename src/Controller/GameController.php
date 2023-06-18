@@ -104,7 +104,7 @@ class GameController extends AbstractController
         $totalParticipants = count($gameParticipants);
         $totalWinners = count($gameWinners);
 
-        $averageLoseWin = ($totalWinners === 0) ? 0 : ($totalParticipants / $totalWinners);
+        $averageLoseWin = ($totalWinners === 0) ? 0 : ($totalWinners / $totalParticipants);
 
         // get best player with most points
         $maxPoints = 0;
@@ -120,6 +120,8 @@ class GameController extends AbstractController
         }
         if ($bestPlayer !== null) {
             $bestPlayer = $bestPlayer->getUsername();
+        } else {
+            $bestPlayer = 'No winner';
         }
 
         // retrieve game proposals of all participants
