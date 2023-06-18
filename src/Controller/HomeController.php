@@ -71,8 +71,8 @@ class HomeController extends BaseController
             $data = [
                 'word' => $word,
                 'duration' => $duration,
-                'init' => $initWord,
-                'classic' => $isClassic,
+                'word_initial_state' => $initWord,
+                'mode' => $isClassic,
             ];
 
             if ($roomId != null) {
@@ -84,7 +84,7 @@ class HomeController extends BaseController
                 ]);
 
                 $statusCode = $response->getStatusCode();
-                if ($statusCode == 200) {
+                if ($statusCode === 200) {
                     $this->addFlash('success', 'Ajout d\'une partie réussi.');
                 } else {
                     $this->addFlash('success', 'Erreur: ' . $statusCode);
@@ -92,14 +92,6 @@ class HomeController extends BaseController
             } else {
                 $this->addFlash('success', 'Room id introuvable');
             }
-
-            // $game->setRoom($room);
-            // $game->setDuration($duration);
-            // $game->setWord($word);
-
-            // $game->setWordStatus($initWord);
-            // $game->setIsClassic($isClassic);
-
             return $this->redirectToRoute('app_home');
         }
 
