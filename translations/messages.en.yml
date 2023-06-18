@@ -1,0 +1,115 @@
+nav:
+  menu:
+    login: Login
+    logout: Logout
+    register: Register
+    account: My account
+home:
+  title: Home
+  table:
+    game:
+      title: On going games
+      name: Name
+      player_count: Player count
+      player_joined: Player joined
+      create_party: Create a party
+      join: Join
+      show_stats: Show stats
+    ranking:
+      title: Ranking
+      name: Name
+      score: Score
+      games_played: Games played
+      games_won: Games won
+      games_lost: Games lost
+  popup:
+    join_game:
+      title: Insert the password to join the game
+      placeholder: Password
+      button: Join
+room:
+  game_master: Game master
+  popup:
+    proposal:
+      title: Make a proposal
+      letter:
+        title: Propose a letter
+        placeholder: Letter
+        button: Send
+      word:
+        title: Propose a word
+        placeholder: Word
+        button: Send
+    quit:
+      title: Do you really want to quit the game?
+      accept: Yes
+      cancel: No
+auth:
+  fields:
+    email:
+      label: Email
+      placeholder: Enter your email
+    username:
+      label: Username
+      placeholder: Enter your username
+    password:
+      label: Password
+      placeholder: Enter your password
+    password_confirmation:
+      label: Password confirmation
+      placeholder: Enter your password confirmation
+  links:
+    forgot_password: Forgot password?
+    Sign_in: Sign in
+    Sign_up: Sign up
+  login:
+    label: Login
+    button: Login
+  register:
+    label: Sign up
+    button: Sign up
+  reset_password:
+    label: Reset password
+    button: Send
+    success: An email has been sent to you with a link to reset your password
+    error: An error has occurred
+  change_password:
+      label: Change password
+      button: Change password
+      success: Your password has been changed
+      error: An error has occurred
+account:
+  title: My account
+  info:
+    title: My information
+    email: Email
+    username: Username
+  update:
+    title: Update Information
+    update_photo: Update profile picture
+    email:
+        title: Email
+        placeholder: Enter your email
+    password:
+        title: Password
+        placeholder: Enter your password
+    password_confirmation:
+        title: Password confirmation
+        placeholder: Enter your password confirmation
+    modify: Modify
+    button: Update
+    success: Your information has been updated
+    error: An error has occurred
+  table:
+    history:
+      title: Games history
+      name: Name
+      score: Score
+      status: Status
+      result_sentence: The word was 
+      victory: Victory
+      defeat: Defeat
+    graphs:
+      title: Number of games played per day
+
+

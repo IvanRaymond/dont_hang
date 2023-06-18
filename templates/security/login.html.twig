@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'auth.login.label'|trans|raw }}{% endblock %}
+
+{% block body %}
+  <style>
+    .container-item {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-form {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-form label{
+      margin-bottom: 5px;
+    }
+
+    .login-form input{
+      margin-bottom: 1em;
+      height: 30px;
+      padding-left: 10px;
+      font-family: kg_indie_flowerregular;
+      border: 0;
+      border-radius: 0px;
+    }
+
+    .login-form button:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .login-form button {
+      border: 0;
+      background-color: white;
+      font-family: kg_indie_flowerregular;
+    }
+
+    .animation-img {
+      height: 400px;
+      width: 400px;
+    }
+
+  </style>
+
+  <div class="container-flex">
+    <div class="container-item animation">
+      <img class="animation-img border lined thick" src="{{ asset('/assets/hang/login.jpg')}}" alt="animation"/>
+      {# <img src="{{ asset('/assets/animation.gif')}}" alt="animation"/> #}
+    </div>
+    <div class="container-item">
+      <form class="login-form" method="post">
+          {% if error %}
+              <div class="snackbar active">
+                <div class="snackbar-content">
+                  {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+                <div class="snackbar-actions">
+                  <div class="snackbar-action-close">Close</div>
+                </div>
+              </div>
+
+              <script>
+                const closeButton = document.querySelector('.snackbar-action-close');
+
+                function hideSnackbar() {
+                  const snackbar = document.querySelector('.snackbar');
+                  snackbar.style.opacity = '0';
+                  setTimeout(function() {
+                    snackbar.classList.remove('active');
+                  }, 1000);
+                }
+                closeButton.addEventListener('click', hideSnackbar);
+
+                setTimeout(hideSnackbar, 15000);
+              </script>
+          {% endif %}
+
+          {% if app.user %}
+              <div class="mb-3">
+                  You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+              </div>
+          {% endif %}
+
+          <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+          <label for="inputUsername">{{ 'auth.fields.username.label'|trans|raw }}</label>
+          <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control border lined thick" autocomplete="username" required autofocus>
+          <label for="inputPassword">{{ 'auth.fields.password.label'|trans|raw }}</label>
+          <input type="password" name="password" id="inputPassword" class="form-control border lined thick" autocomplete="current-password" required>
+
+          <input type="hidden" name="_csrf_token"
+              value="{{ csrf_token('authenticate') }}"
+          >
+
+          {#
+              Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+              See https://symfony.com/doc/current/security/remember_me.html
+
+              <div class="checkbox mb-3">
+                  <label>
+                      <input type="checkbox" name="_remember_me"> Remember me
+                  </label>
+              </div>
+          #}
+
+          <button class="border lined thick" type="submit">
+              {{ 'auth.login.button'|trans|raw }}
+          </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

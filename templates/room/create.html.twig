@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Room{% endblock %}
+
+{% block body %}
+  <style>
+    .content {
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+
+    .form-room {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-row div:first-child {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-row div:nth-child(1) {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .form-row ul {
+      display: none;
+    }
+
+    .valid-roomform-row:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-roomform-row:hover > button {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-roomform-row button {
+      border: 0;
+      background-color: white;
+      font-family: kg_indie_flowerregular;
+    }
+
+    .form-room input {
+      border: 0;
+      height: 30px;
+      padding-left: 10px;
+      font-family: kg_indie_flowerregular;
+      border-radius: 0px;
+      text-align: center;
+    }
+  </style>
+
+  <div class="content">
+    <h1>Create Room</h1>
+      <div class="form-room">
+        {{ form_start(roomForm) }}
+
+        <div class="form-row">
+          {{ form_row(roomForm.name, {
+                attr: { 
+                  'class': 'name-row border lined thick'
+                }}
+          )}}
+        </div>
+
+        <div class="form-row">
+          {{ form_row(roomForm.capacity, {
+                  attr: { 
+                    'class': 'capacity-row border lined thick'
+                  }}
+            )}}
+          </div>
+        <div class="form-row">
+          {{ form_row(roomForm.game_count, 
+              {
+                label: 'Number of games',
+                attr: {
+                  'class': 'game_count-row border lined thick'
+                }
+              }
+          )}}
+        </div>
+
+        <div class="form-row">
+        {{ form_row(roomForm.private,
+              { 
+                label: 'Private room',
+                attr: { 
+                  'class': 'private-row border lined thick'
+                }
+              }
+          )}}
+        </div>
+        <div class="form-row">
+          {{ form_row(roomForm.password, {
+                  attr: { 
+                    'class': 'password-row border lined thick'
+                  }}
+            )}}
+        </div>
+
+        <div class="valid-roomform-row border lined thick">
+          <button type="submit" class="valid-roomform-btn">Create a room</button>
+        </div>
+
+
+        <script>
+          const divValidCreateparty = document.querySelector('.valid-roomform-row');
+          const buttonSubmitCreateparty= document.querySelector('.valid-roomform-btn');
+
+          divValidCreateparty.addEventListener('click', function() {
+            buttonSubmitCreateparty.click();
+          });
+        </script>
+      {{ form_end(roomForm) }}
+    </div>
+  </div>
+{% endblock %}

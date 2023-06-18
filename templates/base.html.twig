@@ -1,19 +1,73 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link href="{{ asset('fonts/KG-Indie-Flower/stylesheet.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/main.css') }}" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+</head>
+<body>
+<nav class="border lined thick" id="navbar">
+    <div class="navbar-left">
+        <a href="/">
+            <img src="{{ asset('favicon-32x32.png') }}" alt="Logo">
+        </a>
+    </div>
+    {% if not is_logged_in %}
+      <div class="navbar-right">
+        <a class="nav-link border lined thick" href="/login">{{ 'nav.menu.login'|trans|raw }}</a>
+        <a class="nav-link border lined thick" href="/register">{{ 'nav.menu.register'|trans|raw }}</a>
+    {% else %}
+        <div class="navbar-right logged">
+          <div class="user-icon" onclick="openMenu();">
+            {% if avatar is defined %}
+              {% if avatar is null %}
+                {% set avatar = 'default-icon.png' %}
+              {% endif %}
+              <img class="avatar-icon" src="{{ asset('assets/users/' ~ avatar) }}" alt="User icon" />
+            {% else %}
+              <img class="avatar-icon" src="{{ asset('assets/users/default-icon.png') }}" alt="User icon"/>
+            {% endif %}
+          </div>
+
+          <div class="menu border lined thick">
+            <ul>
+              <li><a href="/account">{{ 'nav.menu.account'|trans|raw }}</a></li>
+              <li><a href="/logout">{{ 'nav.menu.logout'|trans|raw }}</a></li>
+            </ul>
+          </div>
+
+          <script>
+            function openMenu() {
+              const menu = document.querySelector(".menu");
+              menu.classList.toggle("active");
+            }
+          </script>
+    {% endif %}
+        </div>
+    </div>
+</nav>
+<div id="content">
+    {% block body %}{% endblock %}
+</div>
+
+<footer class="border lined thick" id="bottombar">
+    &copy; {{ "now"|date("Y") }}
+</footer>
+
+<script src="{{ asset('js/main.js') }}"></script>
+</body>
 </html>

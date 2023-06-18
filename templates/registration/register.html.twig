@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+  <style>
+    .container-item {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .registration-form {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .registration-form form {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: column;
+      width: 50%;
+    }
+
+    .form-row div:first-child {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-row div:nth-child(1) {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .form-row ul {
+      display: none;
+    }
+
+    .username-row, .email-row, .password-row {
+      border: 0;
+      height: 30px;
+      padding-left: 10px;
+      font-family: kg_indie_flowerregular;
+      border-radius: 0px;
+    }
+
+    .form-row-agree {
+      margin-bottom: 1em;
+    }
+
+    .form-row-agree input {
+      margin-left: 1em;
+    }
+
+    .valid-signup-row {
+      text-align: center;
+    }
+
+    .valid-signup-row:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-signup-row:hover > button {
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .valid-signup-row button {
+      border: 0;
+      background-color: white;
+      font-family: kg_indie_flowerregular;
+    }
+
+    .animation-img {
+      height: 400px;
+      width: 400px;
+    }
+
+  </style>
+
+  {% if errors|length > 0 %}
+	  <div class="snackbar active">
+      <div class="snackbar-content">
+        {{ errors }}
+      </div>
+      <div class="snackbar-actions">
+        <div class="snackbar-action-close">Close</div>
+      </div>
+    </div>
+
+    <script>
+      const closeButton = document.querySelector('.snackbar-action-close');
+
+      function hideSnackbar() {
+        const snackbar = document.querySelector('.snackbar');
+        snackbar.style.opacity = '0';
+        setTimeout(function() {
+          snackbar.classList.remove('active');
+        }, 1000);
+      }
+      closeButton.addEventListener('click', hideSnackbar);
+
+      setTimeout(hideSnackbar, 15000);
+    </script>
+  {% endif %}
+
+  <div class="container-flex">
+    <div class="container-item">
+      <img class="animation-img border lined thick" src="{{ asset('/assets/hang/register.jpg')}}" alt="animation"/>
+      {# <img src="{{ asset('/assets/animation.gif')}}" alt="animation"/> #}
+    </div>
+    <div class="registration-form container-item">
+      <h1>{{ 'auth.register.label'|trans|raw }}</h1>
+
+      {{ form_start(registrationForm) }}
+        <div class="form-row">
+            {{ form_row(registrationForm.username, {
+              attr: { 
+                'class': 'username-row border lined thick'
+              }}
+            )}}
+        </div>
+
+        <div class="form-row">
+            {{ form_row(registrationForm.email, 
+              { 'attr': { 
+                'class': 'email-row border lined thick'
+              }}
+            )}}
+        </div>
+
+        <div class="form-row">
+            {{ form_row(registrationForm.plainPassword, {
+                label: 'Password',
+                attr: {
+                  'class': 'password-row border lined thick'
+                }
+            }) }}
+        </div>
+        <div class="form-row-agree">
+            {{ form_row(registrationForm.agreeTerms) }}
+        </div>
+
+        <div class="valid-signup-row border lined thick">
+            <button type="submit" class="valid-signup-btn">{{ 'auth.register.label'|trans|raw }}</button>
+        </div>
+
+        <script>
+          const divValidSignup = document.querySelector('.valid-signup-row');
+          const buttonSubmitSignup = document.querySelector('.valid-signup-btn');
+
+          divValidSignup.addEventListener('click', function() {
+            buttonSubmitSignup.click();
+          });
+        </script>
+      {{ form_end(registrationForm) }}
+    </div>
+  </div>
+{% endblock %}

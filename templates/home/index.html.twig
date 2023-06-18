@@ -1,0 +1,460 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'home.title'|trans|raw }}{% endblock %}
+
+{% block body %}
+<style>
+
+.container-flex {
+  margin-left: 5em;
+  margin-right: 5em;
+}
+
+.current-parties, .current-ranking {
+  height: 100%;
+  padding-bottom: 2em;
+}
+
+.join {
+  text-align: center;
+}
+
+.join > a {
+  color: black;
+}
+
+.join:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.current-parties > ul > li:nth-child(1) > .join {
+  background-color: white;
+  cursor: default;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+li {
+  display: flex;
+  padding: 0.5em;
+}
+
+li>span{
+  flex: 1;
+}
+
+.lock-room {
+  flex: 0.3;
+}
+
+.icon-profile, .score-player {
+  flex: 0.5;
+}
+
+.icon-profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.game-won-lost {
+  flex: 2;
+}
+
+h2 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.create-party {
+  display: flex;
+  align-items: center;
+  padding: 1em;
+  color: purple;
+}
+
+.form-row input {
+  color: white;
+  font-family: kg_indie_flowerregular;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.form-row div:first-child {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-row div:nth-child(1) {
+  margin-bottom: 15px;
+  display: flex;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+form > div:nth-child(1) > div > label {
+  flex: 1; 
+}
+
+#content > div > div:nth-child(1) > h2 > div.modal.active > div > form > div:nth-child(3) > div > label{
+  flex: 1; 
+}
+
+.form-row ul {
+  display: none;
+}
+
+.valid-createparty-row {
+  text-align: center;
+}
+
+.valid-createparty-row:hover {
+  cursor: pointer;
+  background-color: rgb(57, 17, 17);
+}
+
+.valid-createparty-row:hover > button {
+  cursor: pointer;
+  background-color: rgb(57, 17, 17);
+}
+
+.valid-createparty-row button {
+  color: white;
+  border: 0;
+  font-size: 20px;
+  font-family: kg_indie_flowerregular;
+  background-color: rgb(54, 54, 54);
+}
+
+.isClassic-row {
+  width: 25px;
+  height: 25px;
+  flex: 0.5;
+  align-self: center;
+}
+
+#content > div > div:nth-child(1) > h2 > div.modal.active > div > form > div:nth-child(2) > div > label {
+  flex: 1;
+}
+
+.create-party {
+  color: red;
+}
+
+.modal .modal-actions {
+  width: 50%;
+}
+
+.show_stats, .join-link {
+  display: block;
+}
+
+#close-stats {
+  min-height: -webkit-fill-available;
+  display: flex;
+  align-items: center;
+  place-content: center;
+}
+
+.ranking-tab-item {
+  align-items: center;
+  text-align: center;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% for flashMessage in app.flashes('success') %}
+	<div class="snackbar active">
+		<div class="snackbar-content">
+			{{ flashMessage }}
+		</div>
+		<div class="snackbar-actions">
+			<div class="snackbar-action-close">Close</div>
+		</div>
+	</div>
+
+	<script>
+		const closeButton = document.querySelector('.snackbar-action-close');
+
+		function hideSnackbar() {
+			const snackbar = document.querySelector('.snackbar');
+			snackbar.style.opacity = '0';
+			setTimeout(function() {
+				snackbar.classList.remove('active');
+			}, 1000);
+		}
+		closeButton.addEventListener('click', hideSnackbar);
+
+		setTimeout(hideSnackbar, 15000);
+	</script>
+{% endfor %}
+
+<div class="container-flex">
+  <div class="container-item">
+    <h2>
+      <span>{{ 'home.table.game.title'|trans|raw }}</span>
+      {% if is_admin %}
+        <span class="join-link create-party border lined thick">{{ 'home.table.game.create_party'|trans|raw }}</span>
+
+        <script>
+          const buttonCreateParty = document.querySelector('.create-party');
+
+          /** Show the overlay */
+          function showOverlay() {
+            const overlay = document.getElementById("overlay");
+            overlay.style.opacity = '1';
+            overlay.classList.add('active');
+          }
+
+          /** Hide the overlay */
+          function hideOverlay() {
+            const overlay = document.getElementById("overlay");
+            overlay.style.opacity = '0';
+            setTimeout(function() {
+              overlay.classList.remove('active');
+            }, 500);
+          }
+
+          /** Show the modal */
+          function showModal() {
+            const modal = document.querySelector('.modal');
+
+            modal.style.opacity = '1';
+            modal.classList.add('active');
+            showOverlay();
+
+          }
+
+          buttonCreateParty.addEventListener('click', showModal);
+
+          function hideModal() {
+            const modal = document.querySelector('.modal');
+
+            modal.style.opacity = '0';
+            setTimeout(function() {
+              modal.classList.remove('active');
+              modal.classList.remove("disabled-action");
+            }, 1000);
+
+          }
+
+          document.addEventListener("DOMContentLoaded", function() {
+            const closeButton = document.querySelector('.modal-action-close');
+            closeButton.addEventListener('click', hideModal);
+            closeButton.addEventListener('click', hideOverlay);
+
+            const overlay = document.getElementById("overlay");
+            overlay.addEventListener('click', hideModal);
+            overlay.addEventListener('click', hideOverlay);
+          });
+
+        </script>
+        <div id="overlay"></div>
+        <div class="modal">
+          <div class="modal-content">
+
+
+           {{ form_start(createGameForm) }}
+              <div class="form-row">
+                {{ form_row(createGameForm.name, {
+                  attr: { 
+                    'class': 'name-row border lined thick'
+                  }}
+                )}}
+            </div>
+
+            <div class="form-row">
+                {{ form_row(createGameForm.word, {
+                  attr: { 
+                    'class': 'word-row border lined thick'
+                  }}
+                )}}
+            </div>
+
+            <div class="form-row">
+                {{ form_row(createGameForm.duration, 
+                  { 'attr': { 
+                    'class': 'duration-row border lined thick'
+                  }}
+                )}}
+            </div>
+
+            <div class="form-row">
+                {{ form_row(createGameForm.isClassic, {
+                    label: 'Classic mode',
+                    attr: {
+                      'class': 'isClassic-row border lined thick'
+                    }
+                }) }}
+            </div>
+            <div class="valid-createparty-row border lined thick">
+              <button type="submit" class="valid-createparty-btn">{{ 'home.table.game.create_party'|trans|raw }}</button>
+            </div>
+
+            <script>
+              const divValidCreateparty = document.querySelector('.valid-createparty-row');
+              const buttonSubmitCreateparty= document.querySelector('.valid-createparty-btn');
+
+              divValidCreateparty.addEventListener('click', function() {
+                buttonSubmitCreateparty.click();
+              });
+            </script>
+          {{ form_end(createGameForm) }}
+          <div class="modal-actions">
+            <div id="close" class="modal-action-close">Close</div>
+          </div>
+        </div>
+      {% endif %}
+    </h2>
+    <div class="current-parties">
+      <ul class="border lined thick">
+        <li class="partie-item">
+          <span class="lock-room"></span>
+          <span class="name-room">{{ 'home.table.game.name'|trans|raw }}</span>
+          <span class="player-joined">{{ 'home.table.game.player_joined'|trans|raw }}</span>
+          <span class="join"></span>
+        </li>
+        {% for room in rooms %}
+          {% set activeCount = 0 %}
+          {% for participant in room.roomParticipants %}
+            {% if participant.isActive() %}
+              {% set activeCount = activeCount + 1 %}
+            {% endif %}
+          {% endfor %}
+          <li class="partie-item {{ loop.last ? '' : 'bottom-bar' }}">
+            <span class="lock-room"></span>
+            <span class="name-room">{{ room.name }}</span>
+            <span class="player-joined">{{ activeCount }}/{{ room.capacity }}</span>
+            
+            <span class="join border lined thick bottom-bar">
+              {% if is_logged_in %}
+                {% if not is_admin %}
+                  {% if room in roomsFinished %}
+                    {% for roomfinished in roomsFinished %}
+                      {% if room == roomfinished %}
+                        {% if room.gameCount() == 1 %}
+                          <a class="show_stats" href="{{ urlStats[loop.index - 1] }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>  
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+                  {% endif %}
+                {% else %}
+                  <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.show_stats'|trans|raw }}</a>
+                {% endif %}
+              {% else %}
+                <a class="join-link" href="{{ path('app_join_room', {'id': room.id}) }}">{{ 'home.table.game.join'|trans|raw }}</a>
+              {% endif %}
+            </span>
+          </li>
+        {% endfor %}
+
+        <div id="stats-modal" class="modal">
+          <div class="modal-content">
+            
+          </div>
+
+          <div class="modal-actions">
+            <div id="close-stats" class="modal-action-close">Close</div>
+          </div>
+        </div>
+
+        <script>
+          $(document).ready(function() {
+            $('a.show_stats').click(function(e) {
+              e.preventDefault();
+
+              const url = $(this).attr('href');
+
+              $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                  updateModalWithData(data);
+                },
+                error: function(xhr, status, error) {
+                  console.log(error);
+                }
+              });
+            });
+
+            function updateModalWithData(data) {
+              // get the modal by id
+              const modal = document.getElementById('stats-modal');
+              // get the modal content
+              const modalContent = modal.querySelector('#stats-modal .modal-content');
+              console.log(modalContent);
+              // get the close button
+              const closeButton = modal.querySelector('.modal-action-close');
+              // insert data into the modal content
+              modalContent.innerHTML = 
+              "<h2>Statistiques de la partie</h2>" +
+              "<p>Pourcentage moyen de réussite: " + data.averageLoseWin*100 + "%</p>" +
+              "<p>Meilleur joueur : " + data.bestPlayer + "</p>" +
+              "<p>Tentatives moyennes : " + data.averageProposalsPerParticipant + "</p>"
+              ;
+              // show the modal
+              modal.style.opacity = '1';
+              modal.classList.add('active');
+            }
+
+            function hideModal() {
+              const modal = document.querySelector('.modal');
+
+              modal.style.opacity = '0';
+              setTimeout(function() {
+                modal.classList.remove('active');
+                modal.classList.remove("disabled-action");
+              }, 1000);
+            }
+
+            const closeButton = document.querySelector('#stats-modal .modal-action-close');
+            closeButton.addEventListener('click', hideModal);
+
+          });
+        </script>
+      </ul>
+    </div>
+  </div>
+  <div class="container-item">
+    <h2>{{ 'home.table.ranking.title'|trans|raw }}</h2>
+
+    <div class="current-ranking">
+      <ul class="ranking-tabs border lined thick">
+        <li class="ranking-tab-item">
+          <span class="icon-profile"></span>
+          <span class="name-player">{{ 'home.table.ranking.name'|trans|raw }}</span>
+          <span class="game-won-lost">{{ 'home.table.ranking.games_won'|trans|raw }}/{{ 'home.table.ranking.games_lost'|trans|raw }}</span>
+          <span class="score-player">{{ 'home.table.ranking.score'|trans|raw }}</span>
+        </li>
+        {% for rank in ranks %}
+          <li class="ranking-tab-item">
+            <span class="icon-profile">
+              {% if rank.picture == null %}
+                <img class="avatar-icon" src="{{ asset('assets/users/default-icon.png') }}" alt="User icon"/>
+              {% else %}
+                <img src="{{ asset('assets/users/' ~ rank.picture) }}" alt="img profile">
+              {% endif %}
+            </span>
+            <span class="name-player">{{ rank.username }}</span>
+            <span class="game-won-lost">{{ rank.gamesWon }}/{{ rank.gameCount - rank.gamesWon }}</span>
+            <span class="score-player">{{ rank.points }}</span>
+          </li>
+          {% endfor %}
+      </ul>
+    </div>
+  </div> 
+</div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}

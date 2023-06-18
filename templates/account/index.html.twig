@@ -1,0 +1,206 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Account{% endblock %}
+
+{% block body %}
+<style>
+	.user-information {
+		margin-top: 1em;
+	}
+
+	.container-item-avatar {
+			flex-basis: 33.33%;
+			flex-grow: 0;
+	}
+
+	.container-item-information-player {
+			width: 100%;
+	}
+
+	.avatar {
+		margin:0 0.5rem;
+		width: 200px;
+		height: 200px;
+	}
+
+	.history-games ul {
+			padding: 0;
+			list-style-type: none;
+	}
+
+	.lose-background {
+		background-color: #ff3f49;
+	}
+
+	.win-background {
+		background-color: #9bdeff;
+	}
+
+	.game-content {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.game {
+		flex-basis: 23.33%;
+	}
+
+	.word {
+		flex-basis: 43.33%;
+	}
+	.points {
+		flex-basis: 33.33%;
+	}
+
+	.bar {
+		width: 50%;
+	}
+
+	.timestamp, .length {
+		font-size: 12px;
+	}
+
+</style>
+{% for flashMessage in app.flashes('success') %}
+	<div class="snackbar active">
+		<div class="snackbar-content">
+			{{ flashMessage }}
+		</div>
+		<div class="snackbar-actions">
+			<div class="snackbar-action-close">Close</div>
+		</div>
+	</div>
+
+	<script>
+		const closeButton = document.querySelector('.snackbar-action-close');
+
+		function hideSnackbar() {
+			const snackbar = document.querySelector('.snackbar');
+			snackbar.style.opacity = '0';
+			setTimeout(function() {
+				snackbar.classList.remove('active');
+			}, 1000);
+		}
+		closeButton.addEventListener('click', hideSnackbar);
+
+		setTimeout(hideSnackbar, 15000);
+	</script>
+{% endfor %}
+<div class="container-flex">
+    <div class="container-item">
+        <div class="user-information container-flex">
+            <div class="container-item-avatar">
+							<span>
+                {% if avatar is defined %}
+                  <img class="avatar border lined thick" src="{{ asset('/assets/users/' ~ avatar) }}" alt="User icon" />
+                {% else %}
+                    <img class="avatar border lined thick" src="{{ asset('/assets/users/default-icon.png') }}" alt="User icon"/>
+                {% endif %}
+							</span>
+            </div> 
+            <div class="container-item-information-player">
+                <p>{{ name }}</p>
+                <p>{{ email }}</p>
+                <a href="/account/edit"> 
+									{{ 'account.update.title'|trans|raw }}
+								</a>
+            </div>
+        </div>
+        <div class="user-stats">
+        <div class="chart-container" style="position: relative; height:40vh; width:40vw">
+            <canvas id="myChart"></canvas>
+        </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+								const proposals = {{ proposals|json_encode|raw }};
+
+								const label = "{{ 'account.table.graphs.title'|trans|raw }}";
+								// get all days of proposals
+								const days = proposals.map(proposal => proposal.day);
+
+								// get all number of proposals 
+								const numberProposals = proposals.map(proposal => proposal.proposalCount);
+								console.log(numberProposals);
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                    labels: days,
+                    datasets: [{
+                        label: label,
+                        data: numberProposals,
+                        backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                    },
+                    options: {
+                        responsive : true,
+                    scales: {
+                        y: {
+                        beginAtZero: true
+                        }
+                    }
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="container-item">
+        <h2>{{ 'account.table.history.title'|trans|raw }}</h2>
+        <div class="history-games">
+					{% if parties is not empty %}
+            <ul class="border lined thick">
+    					{% for partie in parties %}
+						      <li class="{{ loop.last ? '' : 'bottom-bar' }}">
+										<div class="content {{ partie.result == 'perdant' ? 'lose-background' : 'win-background' }}">
+											<div class="game-content">
+												<div class="game">
+													<div class="timestamp">
+														{{ partie.gameDate|date('d-m-Y') }}
+														<span>|</span>
+														<span class="length">{{ partie.duration }}</span>
+													</div>
+													<div class="bar">
+													</div>
+													<div class="result">
+														<span>
+														{% if partie.result is not null %}
+															{{ 'account.table.history.victory'|trans|raw }}
+														{% else %}
+															{{ 'account.table.history.defeat'|trans|raw }}
+														{% endif %}
+														</span>
+													</div>
+												</div>
+												<div class="word">
+													{{ 'account.table.history.result_sentence'|trans|raw }} : <span>{{ partie.word }}</span>
+												</div>
+												<div class="points">
+													<span>{{ partie.points }}</span> pts
+												</div>
+											</div>
+										</div>
+									</li>
+								{% endfor %}
+            </ul>
+					{% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
