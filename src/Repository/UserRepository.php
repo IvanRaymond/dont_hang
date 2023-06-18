@@ -69,4 +69,37 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             return null;
         }
     }
+
+    public function getAllRank()
+    {
+        $query = $this->getEntityManager()->createQuery('
+            SELECT u.id, u.username, u.picture, SUM(gp.points) AS points, COUNT(gp.id) AS gameCount, COUNT(gw.id) AS gamesWon
+            FROM App\Entity\User u
+            LEFT JOIN App\Entity\GameParticipant gp WITH gp.user = u
+            LEFT JOIN App\Entity\GameWinner gw WITH gw.user = u
+            GROUP BY u.id
+            ORDER BY points DESC
+        ');
+
+        return $query->getResult();
+    }
+
+    public function getHistory($userId)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery('
+            SELECT g.finished_at AS gameDate, g.duration AS duration, gw.id AS result, g.word AS word, gp.points AS points
+            FROM App\Entity\GameParticipant gp
+            JOIN gp.game g
+            LEFT JOIN App\Entity\GameWinner gw WITH gw.game = g AND gw.user = :userId
+            WHERE gp.user = :userId
+            AND (gw.id IS NOT NULL OR gw.id IS NULL)
+            ORDER BY g.finished_at DESC
+        ');
+
+        $query->setParameter('userId', $userId);
+
+        return $query->getResult();
+    }
 }

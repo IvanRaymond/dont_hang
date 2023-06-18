@@ -15,12 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class AccountController extends BaseController
 {
     #[Route('/account', name: 'app_account')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
         $isLogged = $this->isLoggedIn();
         if (!$isLogged) {
             return $this->redirectToRoute('app_login');
         }
+
+        // get history
+        $user = $this->getUser();
+        $userRepository = $entityManager->getRepository(User::class);
+        $parties = $userRepository->getHistory($user->getId());
 
         return $this->render('account/index.html.twig', [
             'controller_name' => 'AccountController',
@@ -28,6 +33,7 @@ class AccountController extends BaseController
             'name' => $this->getUser()->getUsername(),
             'email' => $this->getUser()->getEmail(),
             'avatar' => $this->getUser()->getPicture(),
+            'parties' => $parties,
         ]);
     }
 

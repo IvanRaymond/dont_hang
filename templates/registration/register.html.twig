@@ -74,6 +74,11 @@
       font-family: kg_indie_flowerregular;
     }
 
+    .animation-img {
+      height: 400px;
+      width: 400px;
+    }
+
   </style>
 
   {% if errors|length > 0 %}
@@ -104,7 +109,7 @@
 
   <div class="container-flex">
     <div class="container-item">
-      <img class="animation-img" src="" alt="animation"/>
+      <img class="animation-img border lined thick" src="{{ asset('/assets/hang/register.jpg')}}" alt="animation"/>
       {# <img src="{{ asset('/assets/animation.gif')}}" alt="animation"/> #}
     </div>
     <div class="registration-form container-item">

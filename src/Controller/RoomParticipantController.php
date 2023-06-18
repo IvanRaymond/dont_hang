@@ -52,7 +52,7 @@ class RoomParticipantController extends AbstractController
             $entityManager->persist($room_participant);
             $entityManager->flush();
             $game = $entityManager->getRepository(Game::class)->findLatestByRoom($room->getId());
-            if ($game && $game->isActive() && $game->getIsClassic()) {
+            if ($game && $game->isActive() && $game->isClassic()) {
                 $game_participant = new GameParticipant();
                 $game_participant->setUser($user);
                 $game_participant->setGame($game);

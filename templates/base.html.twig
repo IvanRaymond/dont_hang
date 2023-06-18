@@ -27,33 +27,36 @@
         </a>
     </div>
     {% if not is_logged_in %}
-    <div class="navbar-right">
-        <a class="nav-link border lined thick" href="/login">CONNEXION</a>
-        <a class="nav-link border lined thick" href="/register">S'ENREGISTRER</a>
-        {% else %}
+      <div class="navbar-right">
+        <a class="nav-link border lined thick" href="/login">{{ 'nav.menu.login'|trans|raw }}</a>
+        <a class="nav-link border lined thick" href="/register">{{ 'nav.menu.register'|trans|raw }}</a>
+    {% else %}
         <div class="navbar-right logged">
-            <div class="user-icon" onclick="openMenu();">
-                {#                {% if avatar is not defined %} #}
-                {#                  <img class="avatar-icon" src="{{ asset('assets/users/' ~ avatar) }}" alt="User icon" /> #}
-                {#                {% else %} #}
-                <img class="avatar-icon" src="{{ asset('assets/users/default-icon.png') }}" alt="User icon"/>
-                {#                {% endif %} #}
-            </div>
-
-            <div class="menu border lined thick">
-                <ul>
-                    <li><a href="/account">Compte</a></li>
-                    <li><a href="/logout">Déconnexion</a></li>
-                </ul>
-            </div>
-
-            <script>
-                function openMenu() {
-                    const menu = document.querySelector(".menu");
-                    menu.classList.toggle("active");
-                }
-            </script>
+          <div class="user-icon" onclick="openMenu();">
+            {% if avatar is defined %}
+              {% if avatar is null %}
+                {% set avatar = 'default-icon.png' %}
+              {% endif %}
+              <img class="avatar-icon" src="{{ asset('assets/users/' ~ avatar) }}" alt="User icon" />
+            {% else %}
+              <img class="avatar-icon" src="{{ asset('assets/users/default-icon.png') }}" alt="User icon"/>
             {% endif %}
+          </div>
+
+          <div class="menu border lined thick">
+            <ul>
+              <li><a href="/account">{{ 'nav.menu.account'|trans|raw }}</a></li>
+              <li><a href="/logout">{{ 'nav.menu.logout'|trans|raw }}</a></li>
+            </ul>
+          </div>
+
+          <script>
+            function openMenu() {
+              const menu = document.querySelector(".menu");
+              menu.classList.toggle("active");
+            }
+          </script>
+    {% endif %}
         </div>
     </div>
 </nav>

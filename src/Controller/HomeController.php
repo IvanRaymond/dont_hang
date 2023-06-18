@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Game;
+use App\Entity\User;
 use App\Entity\Room;
+use App\Entity\GameParticipant;
+use App\Entity\GameWinner;
 use App\Form\CreateGameType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +22,10 @@ class HomeController extends BaseController
     public function index(Request $request, EntityManagerInterface $entityManager, HttpClientInterface $httpClient): Response
     {
         $isLogged = $this->isLoggedIn();
+
+        // get host
+        $httpHost = rtrim($_SERVER['HTTP_HOST'], '/');
+
         if ($isLogged) {
             $isAdmin = $this->getUser()->isMaster();
         } else {
@@ -69,7 +76,6 @@ class HomeController extends BaseController
             ];
 
             if ($roomId != null) {
-                $httpHost = rtrim($_SERVER['HTTP_HOST'], '/');
                 $url = 'http://' . $httpHost;
                 $url .= $this->generateUrl('app_game_create', ['roomId' => $roomId]);
 
@@ -97,15 +103,45 @@ class HomeController extends BaseController
             return $this->redirectToRoute('app_home');
         }
 
+        $rooms = $entityManager->getRepository(Room::class)->findAll();
+
+        $roomsFinished = null;
+        $statsRoomsFinished = null;
+        $urlStats = [];
+        if ($this->getUser()) {
+            $user = $this->getUser();
+            $userId = $user->getId();
+            $roomRepository = $entityManager->getRepository(Room::class);
+            $roomsFinished = $roomRepository->findRoomsByCapacityAndUser($userId);
+
+            // get party stats from room
+            // for all rooms finished
+            foreach($roomsFinished as $roomFinished) {
+                $roomId = $roomFinished->getId();
+                $game = $entityManager->getRepository(Game::class)->findLatestByRoom($roomId);
+                // get id game
+                $gameId = $game->getId();
+                $urlStatsGame = 'http://' . $httpHost;
+                $urlStatsGame = $this->generateUrl('app_game_stats', ['roomId' => $gameId, 'gameId' => $gameId]);
+                $urlStats[] = $urlStatsGame;
+            }
+        }
+
+        // get all user ranks
+        $userRepository = $entityManager->getRepository(User::class);
+        $ranks = $userRepository->getAllRank();
+
         $avatar = $this->getUser() ? $this->getUser()->getPicture() : '';
 
-        $rooms = $entityManager->getRepository(Room::class)->findAll();
         return $this->render('home/index.html.twig', [
             'is_logged_in' => $isLogged,
             'is_admin' => $isAdmin,
             'avatar' => $avatar,
             'controller_name' => 'HomeController',
             'rooms' => $rooms,
+            'roomsFinished' => $roomsFinished,
+            'urlStats' => $urlStats,
+            'ranks' => $ranks,
             'createGameForm' => $form->createView(),
         ]);
     }
